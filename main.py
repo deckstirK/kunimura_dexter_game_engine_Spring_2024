@@ -49,6 +49,9 @@ class Game:
         print("create new game...")
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
+        self.coin = pg.sprite.Group()
+        self.mobs = pg.sprite.Group()
+        self.power_up = pg.sprite.Group()
         # self.player1 = Player(self, 1, 1)
         # for x in range(10, 20):
         #     Wall(self, x, 5)
@@ -61,10 +64,15 @@ class Game:
                     Wall(self, col, row)
                 if tile == 'P':
                     self.player = Player(self, col, row)
+                if tile == 'c':
+                    print("a coin at", row, col)
+                    coin(self, col, row)
+                if tile == 'u':
+                    power_up(self, col, row)
 
     def update(self):
         self.all_sprites.update()
-
+                    
     def run(self):
         # 
         self.playing = True
@@ -112,3 +120,23 @@ while True:
     g.new()
     g.run()
     #g.show_go_screen()
+
+
+
+#         def collide_with_group(self, group, kill):
+#         hits = pg.sprite.spritecollide(self, group, kill)
+#         if hits:
+#             if str(hits[0].__class__.__name__) == "Coin":
+#                 self.moneybag += 1
+
+#     def update(self):
+#         self.get_keys()
+# @@ -73,6 +79,16 @@ def update(self):
+#         self.rect.y = self.y
+#         # add collision later
+#         self.collide_with_walls('y')
+#         self.collide_with_group(self.game.coins, True)
+
+#         # coin_hits = pg.sprite.spritecollide(self.game.coins, True)
+#         # if coin_hits:
+#         #     print("I got a coin")
