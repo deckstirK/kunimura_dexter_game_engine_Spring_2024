@@ -16,4 +16,4 @@ YELLOW = (255,255,0)
 
 #player settings
 
-PLAYER_SPEED = 300
+#PLAYER_SPEED = 300

@@ -1,5 +1,10 @@
 #This file was created by: Dexter Kunimura
 
+'''
+add enemy
+add more power ups
+add healthbar
+'''
 #import libraries and modules
 import pygame as pg
 from random import randint
