@@ -14,6 +14,6 @@ LIGHTGREY = (75, 75, 75)
 BLUE = (0,0,255)
 YELLOW = (255,255,0)
 
-#player settings
 
+#player settings
 #PLAYER_SPEED = 300

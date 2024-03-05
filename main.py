@@ -1,8 +1,8 @@
 #This file was created by: Dexter Kunimura
 
 '''
-add enemy
-add more power ups
+add sprites
+add more power ups (THE MUSHROOM!!!!!!!)
 add healthbar
 '''
 #import libraries and modules
@@ -125,23 +125,3 @@ while True:
     g.new()
     g.run()
     #g.show_go_screen()
-
-
-
-#         def collide_with_group(self, group, kill):
-#         hits = pg.sprite.spritecollide(self, group, kill)
-#         if hits:
-#             if str(hits[0].__class__.__name__) == "Coin":
-#                 self.moneybag += 1
-
-#     def update(self):
-#         self.get_keys()
-# @@ -73,6 +79,16 @@ def update(self):
-#         self.rect.y = self.y
-#         # add collision later
-#         self.collide_with_walls('y')
-#         self.collide_with_group(self.game.coins, True)
-
-#         # coin_hits = pg.sprite.spritecollide(self.game.coins, True)
-#         # if coin_hits:
-#         #     print("I got a coin")

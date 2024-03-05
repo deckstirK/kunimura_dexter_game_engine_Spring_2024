@@ -3,6 +3,7 @@
 #from (this place) import (everything)
 from settings import *
 import pygame as pg
+# from random import choice
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -64,14 +65,18 @@ class Player(pg.sprite.Sprite):
                     self.y = hits[0].rect.bottom
                 self.vy = 0
                 self.rect.y = self.y
+
     def collide_with_group(self, group, kill):
-        hits = pg.sprite.spritecollide(self, self.game.coin, kill)
+        hits = pg.sprite.spritecollide(self, group, kill)
         if hits:
-            return True
-        hits = pg.sprite.spritecollide(self, self.game.power_up, kill)
-        if hits:
-            return True
-            self.speed += 600
+            if str(hits[0].__class__.__name__) == "Coin":
+                self.moneybag += 1
+            if str(hits[0].__class__.__name__) == "power_up":
+                print(hits[0].__class__.__name__)
+                self.speed += 300
+            # if str(hits[0].__class__.__name__) == "mob":
+            #     print(hits[0].__class__.__name__)
+            #     print("collided with mob")
 
     def update(self):
         self.get_keys()
@@ -84,14 +89,13 @@ class Player(pg.sprite.Sprite):
         # add collision later
         self.collide_with_walls('y')
         self.collide_with_group(self.game.coin, True)
+        self.collide_with_group(self.game.power_up, True)
+        # self.collide_with_group(self.game.mobs, False)
 
         # coin_hits = pg.sprite.spritecollide(self.game.coins, True)
         # if coin_hits:
         #     print("I got a coin")
-
-
-
-
+     
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.walls
@@ -130,3 +134,16 @@ class power_up(pg.sprite.Sprite):
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
+
+# class mob(pg.sprite.Sprite):
+#     def __init__(self, game, x, y):
+#         self.groups = game.all_sprites, game.mob
+#         pg.sprite.Sprite.__init__(self, self.groups)
+#         self.game = game
+#         self.image = pg.Surface((TILESIZE, TILESIZE))
+#         self.image.fill(PURPLE)
+#         self.rect = self.image.get_rect()
+#         self.x = x
+#         self.y = y
+#         self.rect.x = x * TILESIZE
+#         self.rect.y = y * TILESIZE
