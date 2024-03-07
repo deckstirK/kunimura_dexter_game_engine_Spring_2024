@@ -13,6 +13,7 @@ RED = (255, 0, 0)
 LIGHTGREY = (75, 75, 75)
 BLUE = (0,0,255)
 YELLOW = (255,255,0)
+WHITE = (255,255,255)
 
 
 #player settings
