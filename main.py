@@ -29,7 +29,12 @@ class Game:
                 # TRANSPLANT THIS
     def load_data(self):
         game_folder = path.dirname(__file__)
-        self.map_data = []
+       img_folder = path.join(game_folder, 'images')
+            self.player_img = pg.image.load(path.join(img_folder, "awesome.png")).convert_alpha()
+            self.map_data = []
+
+
+    
         # 'r'     open for reading (default)
         # 'w'     open for writing, truncating the file first
         # 'x'     open for exclusive creation, failing if the file already exists
@@ -40,6 +45,8 @@ class Game:
         # 'U'     universal newlines mode (deprecated)
         # below opens file for reading in text mode
         # with 
+
+    
         '''
         The with statement is a context manager in Python. 
         It is used to ensure that a resource is properly closed or released 
