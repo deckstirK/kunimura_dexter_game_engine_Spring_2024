@@ -12,6 +12,7 @@ from settings import *
 from sprites import *
 import sys
 from os import path
+from images import *
 
 #define game class
 class Game:
@@ -29,29 +30,9 @@ class Game:
                 # TRANSPLANT THIS
     def load_data(self):
         game_folder = path.dirname(__file__)
-       img_folder = path.join(game_folder, 'images')
-            self.player_img = pg.image.load(path.join(img_folder, "awesome.png")).convert_alpha()
-            self.map_data = []
-
-
-    
-        # 'r'     open for reading (default)
-        # 'w'     open for writing, truncating the file first
-        # 'x'     open for exclusive creation, failing if the file already exists
-        # 'a'     open for writing, appending to the end of the file if it exists
-        # 'b'     binary mode
-        # 't'     text mode (default)
-        # '+'     open a disk file for updating (reading and writing)
-        # 'U'     universal newlines mode (deprecated)
-        # below opens file for reading in text mode
-        # with 
-
-    
-        '''
-        The with statement is a context manager in Python. 
-        It is used to ensure that a resource is properly closed or released 
-        after it is used. This can help to prevent errors and leaks.
-        '''
+        self.img_folder = path.join(game_folder, 'images')
+        self.player_img = pg.image.load(path.join(self.img_folder, "smile.png")).convert_alpha()
+        self.map_data = []
         with open(path.join(game_folder, 'map.txt'), 'rt') as f:
             for line in f:
                 print(line)
