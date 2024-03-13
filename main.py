@@ -3,7 +3,7 @@
 '''
 add sprites
 add more power ups (THE MUSHROOM!!!!!!!)
-add healthbar
+make moving mob
 '''
 #import libraries and modules
 import pygame as pg
@@ -43,7 +43,7 @@ class Game:
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.coin = pg.sprite.Group()
-        self.mobs = pg.sprite.Group()
+        self.mob = pg.sprite.Group()
         self.power_up = pg.sprite.Group()
         # self.player1 = Player(self, 1, 1)
         # for x in range(10, 20):
@@ -62,6 +62,9 @@ class Game:
                     coin(self, col, row)
                 if tile == 'u':
                     power_up(self, col, row)
+                if tile == 'm':
+                    print("a mob at", row, col)
+                    mob(self, col, row)
 
     def update(self):
         self.all_sprites.update()
