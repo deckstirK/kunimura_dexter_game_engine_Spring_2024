@@ -32,6 +32,7 @@ class Game:
         game_folder = path.dirname(__file__)
         self.img_folder = path.join(game_folder, 'images')
         self.player_img = pg.image.load(path.join(self.img_folder, "smile.png")).convert_alpha()
+        self.mob_img = pg.image.load(path.join(self.img_folder, "stoic.png")).convert_alpha()
         self.map_data = []
         with open(path.join(game_folder, 'map.txt'), 'rt') as f:
             for line in f:
