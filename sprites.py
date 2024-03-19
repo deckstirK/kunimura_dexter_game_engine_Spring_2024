@@ -256,23 +256,23 @@ class mob(pg.sprite.Sprite):
                 self.rect.y = self.y
     def update(self):
         # self.image.blit(self.game.screen, self.pic)
-        # pass
-        # # self.rect.x += 1
-        # self.x += self.vx * self.game.dt
-        # self.y += self.vy * self.game.dt
+        pass
+        # self.rect.x += 1
+        self.x += self.vx * self.game.dt
+        self.y += self.vy * self.game.dt
         
-        # if self.rect.x < self.game.player.rect.x:
-        #     self.vx = 100
-        # if self.rect.x > self.game.player.rect.x:
-        #     self.vx = -100    
-        # if self.rect.y < self.game.player.rect.y:
-        #     self.vy = 100
-        # if self.rect.y > self.game.player.rect.y:
-        #     self.vy = -100
+        if self.rect.x < self.game.player.rect.x:
+            self.vx = 100
+        if self.rect.x > self.game.player.rect.x:
+            self.vx = -100    
+        if self.rect.y < self.game.player.rect.y:
+            self.vy = 100
+        if self.rect.y > self.game.player.rect.y:
+            self.vy = -100
         self.rect.x = self.x
-        # self.collide_with_walls('x')
+        self.collide_with_walls('x')
         self.rect.y = self.y
-        # self.collide_with_walls('y')
+        self.collide_with_walls('y')
 
 def sensor(self):
         if abs(self.rect.x - self.game.player.rect.x) < self.chase_distance and abs(self.rect.y - self.game.player.rect.y) < self.chase_distance:
