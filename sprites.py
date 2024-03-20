@@ -138,7 +138,8 @@ class coin(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(YELLOW)
+        # self.image.fill(YELLOW)
+        self.image = game.coin_img
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
@@ -151,7 +152,8 @@ class power_up(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(RED)
+        # self.image.fill(RED)
+        self.image = game.power_up_img
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
@@ -232,9 +234,10 @@ class mob(pg.sprite.Sprite):
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
         # self.surface = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(PURPLE)
+        # self.image.fill(PURPLE)
         # self.pic = self.game.mob_img
         self.rect = self.image.get_rect()
+        self.image = game.mob_img
         self.x = x
         self.y = y
         self.vx, self.vy = 100, 100
@@ -257,7 +260,6 @@ class mob(pg.sprite.Sprite):
     def update(self):
         # self.image.blit(self.game.screen, self.pic)
         pass
-        # self.rect.x += 1
         self.x += self.vx * self.game.dt
         self.y += self.vy * self.game.dt
         
