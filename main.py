@@ -27,7 +27,9 @@ class Game:
         self.clock = pg.time.Clock()
         self.load_data()
 
-                # TRANSPLANT THISs
+                # TRANSPLANT THIS
+    
+    #making the sprites for the objects in the game
     def load_data(self):
         game_folder = path.dirname(__file__)
         self.img_folder = path.join(game_folder, 'images')
@@ -53,6 +55,8 @@ class Game:
         # self.player1 = Player(self, 1, 1)
         # for x in range(10, 20):
         #     Wall(self, x, 5)
+
+        #determining placement features for map making
         for row, tiles in enumerate(self.map_data):
             print(row)
             for col, tile in enumerate(tiles):
@@ -89,18 +93,21 @@ class Game:
          pg.quit()
          sys.exit()
 
+    #making the method for drawing the grid
     def draw_grid(self):
      for x in range (0, WIDTH, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (x,0), (x, HEIGHT))
      for y in range (0, HEIGHT, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (0,y), (WIDTH, y))
 
+    #making the grid in the background
     def draw(self):
          self.screen.fill(BGCOLOR)
          self.draw_grid()
          self.all_sprites.draw(self.screen)
          pg.display.flip()
-     
+
+    #saying what will happen if certain things are done by the player that are outside of the game 
     def events(self):
          for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -114,6 +121,7 @@ class Game:
     #                 self.player.move(dy=1)
     #             if event.key == pg.K_UP:
     #                 self.player.move(dy=-1)
+    #supposed make the start screen; i didnt make a draw text feature
     def show_start_screen(self):
         self.screen.fill(BGCOLOR)
         self.draw_text(self.screen, "This is the start screen", 24, WHITE, WIDTH/2 - 32, 2)
@@ -122,6 +130,7 @@ class Game:
         
         pass 
 
+    #idk what this is for
     def wait_for_key(self):
         waiting = True
         while waiting: 

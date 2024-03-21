@@ -28,6 +28,7 @@ def collide_with_walls(sprite, group, dir):
             sprite.vel.y = 0
             sprite.rect.centery = sprite.pos.y
 
+#making the player class
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
@@ -43,6 +44,7 @@ class Player(pg.sprite.Sprite):
         self.moneybag = 0
         self.speed = 300
     
+    #making the movement controls for the player
     def get_keys(self):
         self.vx, self.vy = 0, 0
         keys = pg.key.get_pressed()
@@ -58,6 +60,7 @@ class Player(pg.sprite.Sprite):
             self.vx *= 0.7071
             self.vy *= 0.7071
 
+    #lays down rules for what happens when you hit a wall (hit a wall=cannot move in that direction)
     def collide_with_walls(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
@@ -78,6 +81,7 @@ class Player(pg.sprite.Sprite):
                 self.vy = 0
                 self.rect.y = self.y
 
+    #determines what will happen when you hit special things
     def collide_with_group(self, group, kill):
         hits = pg.sprite.spritecollide(self, group, kill)
         if hits:
@@ -96,7 +100,7 @@ class Player(pg.sprite.Sprite):
                 print(hits[0].__class__.__name__)
                 print("collided with mob")
 
-    #making the list for things that get killed upon collision
+    #making the list for things that get killed (disappear) upon collision
     def update(self):
         self.get_keys()
         self.x += self.vx * self.game.dt
@@ -109,7 +113,8 @@ class Player(pg.sprite.Sprite):
         self.collide_with_group(self.game.power_up, True)
         self.collide_with_group(self.game.mob, True)
         self.collide_with_group(self.game.mushroom, True)
-     
+
+#designing the size and looks of the wall        
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.walls
@@ -123,7 +128,7 @@ class Wall(pg.sprite.Sprite):
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
 
-#making the coin class
+#designing the size and looks of the coin class
 class coin(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.coin
@@ -137,7 +142,7 @@ class coin(pg.sprite.Sprite):
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
 
-#making the power up class
+#designing the size and looks of the power up class
 class power_up(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.power_up
@@ -151,7 +156,7 @@ class power_up(pg.sprite.Sprite):
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
 
-#making the mushroom class
+#designing the size and looks of the mushroom class
 class mushroom(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.mushroom
@@ -164,7 +169,8 @@ class mushroom(pg.sprite.Sprite):
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
-        
+
+#creating the rules for the mob class
 class mob(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.mob
@@ -175,6 +181,7 @@ class mob(pg.sprite.Sprite):
         self.image = game.mob_img
         self.x = x
         self.y = y
+        #making the movement and speed of the mob (how fast it moves, its collision, etc.)
         self.vx, self.vy = 100, 100
         self.x = x * TILESIZE
         self.y = y * TILESIZE
@@ -208,6 +215,7 @@ class mob(pg.sprite.Sprite):
         self.rect.y = self.y
         self.collide_with_walls('y')
 
+#making the pathfinding and pursuing of the player for the mob
 def sensor(self):
         if abs(self.rect.x - self.game.player.rect.x) < self.chase_distance and abs(self.rect.y - self.game.player.rect.y) < self.chase_distance:
             self.chasing = True
