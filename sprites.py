@@ -87,13 +87,26 @@ class Player(pg.sprite.Sprite):
         if hits:
             if str(hits[0].__class__.__name__) == "Coin":
                 self.moneybag += 1
+
             if str(hits[0].__class__.__name__) == "power_up":
                 print(hits[0].__class__.__name__)
-                self.speed += 300          
+                self.speed += 150
+                #changing the player expression back to normal if you stepped on the trap
+                self.image = self.game.player_img
+                self.rect = self.image.get_rect()
+
+            if str(hits[0].__class__.__name__) == "trap":
+                print(hits[0].__class__.__name__)
+                self.speed -= 150
+                #changing the player to a pained expression upon stepping on the trap
+                self.image = self.game.newplayer_img
+                #update the player's rect to the new image
+                self.rect = self.image.get_rect()
+
             if str(hits[0].__class__.__name__) == "mushroom":
-                # Double the size of the player's image
+                # double the size of the player's image
                 self.image = pg.transform.scale(self.image, (self.image.get_width() * 2, self.image.get_height() * 2))
-                # Update the player's rect to match the new size
+                # update the player's rect to match the new size
                 self.rect = self.image.get_rect()
 
             if str(hits[0].__class__.__name__) == "mob":
@@ -113,6 +126,7 @@ class Player(pg.sprite.Sprite):
         self.collide_with_group(self.game.power_up, True)
         self.collide_with_group(self.game.mob, True)
         self.collide_with_group(self.game.mushroom, True)
+        self.collide_with_group(self.game.trap, True)
 
 #designing the size and looks of the wall        
 class Wall(pg.sprite.Sprite):
@@ -121,8 +135,9 @@ class Wall(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(BLUE)
+        # self.image.fill(BLUE)
         self.rect = self.image.get_rect()
+        self.image = game.wall_img
         self.x = x
         self.y = y
         self.rect.x = x * TILESIZE
@@ -169,6 +184,33 @@ class mushroom(pg.sprite.Sprite):
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
+
+class trap(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.trap
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image = game.trap_img
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
+
+#brainless mob for when i have to take pictures of it
+# class mob(pg.sprite.Sprite):
+#     def __init__(self, game, x, y):
+#         self.groups = game.all_sprites, game.mob
+#         pg.sprite.Sprite.__init__(self, self.groups)
+#         self.game = game
+#         self.image = pg.Surface((TILESIZE, TILESIZE))
+#         self.image = game.mob_img
+#         self.rect = self.image.get_rect()
+#         self.x = x
+#         self.y = y
+#         self.rect.x = x * TILESIZE
+#         self.rect.y = y * TILESIZE
 
 #creating the rules for the mob class
 class mob(pg.sprite.Sprite):

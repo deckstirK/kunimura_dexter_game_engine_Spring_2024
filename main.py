@@ -12,7 +12,6 @@ from settings import *
 from sprites import *
 import sys
 from os import path
-from images import *
 
 #define game class
 class Game:
@@ -34,10 +33,13 @@ class Game:
         game_folder = path.dirname(__file__)
         self.img_folder = path.join(game_folder, 'images')
         self.player_img = pg.image.load(path.join(self.img_folder, "smile.png")).convert_alpha()
+        self.newplayer_img = pg.image.load(path.join(self.img_folder, "anguish.png")).convert_alpha()
         self.mob_img = pg.image.load(path.join(self.img_folder, "stoic.png")).convert_alpha()
         self.coin_img = pg.image.load(path.join(self.img_folder, "medallion.png")).convert_alpha()
         self.power_up_img = pg.image.load(path.join(self.img_folder, "slapjuice.png")).convert_alpha()
         self.mushroom_img = pg.image.load(path.join(self.img_folder, "chugjug.png")).convert_alpha()
+        self.wall_img = pg.image.load(path.join(self.img_folder, "bricks.png")).convert_alpha()
+        self.trap_img = pg.image.load(path.join(self.img_folder, "ouchie.png")).convert_alpha()
         self.map_data = []
         with open(path.join(game_folder, 'map.txt'), 'rt') as f:
             for line in f:
@@ -52,6 +54,7 @@ class Game:
         self.mob = pg.sprite.Group()
         self.power_up = pg.sprite.Group()
         self.mushroom = pg.sprite.Group()
+        self.trap = pg.sprite.Group()
         # self.player1 = Player(self, 1, 1)
         # for x in range(10, 20):
         #     Wall(self, x, 5)
@@ -77,6 +80,9 @@ class Game:
                 if tile == 'j':
                     print("a mushroom at", row, col)
                     mushroom(self, col, row)
+                if tile == 't':
+                    print("a trap at", row, col)
+                    trap(self, col, row)
 
     def update(self):
         self.all_sprites.update()
@@ -94,16 +100,18 @@ class Game:
          sys.exit()
 
     #making the method for drawing the grid
+    '''
     def draw_grid(self):
      for x in range (0, WIDTH, TILESIZE):
-            pg.draw.line(self.screen, LIGHTGREY, (x,0), (x, HEIGHT))
+            pg.draw.line(self.screen, WHITE, (x,0), (x, HEIGHT))
      for y in range (0, HEIGHT, TILESIZE):
-            pg.draw.line(self.screen, LIGHTGREY, (0,y), (WIDTH, y))
+            pg.draw.line(self.screen, WHITE, (0,y), (WIDTH, y))
+    '''
 
-    #making the grid in the background
+    #making the background
     def draw(self):
          self.screen.fill(BGCOLOR)
-         self.draw_grid()
+        #  self.draw_grid()
          self.all_sprites.draw(self.screen)
          pg.display.flip()
 
