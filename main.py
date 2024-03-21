@@ -27,7 +27,7 @@ class Game:
         self.clock = pg.time.Clock()
         self.load_data()
 
-                # TRANSPLANT THIS
+                # TRANSPLANT THISs
     def load_data(self):
         game_folder = path.dirname(__file__)
         self.img_folder = path.join(game_folder, 'images')
@@ -35,6 +35,7 @@ class Game:
         self.mob_img = pg.image.load(path.join(self.img_folder, "stoic.png")).convert_alpha()
         self.coin_img = pg.image.load(path.join(self.img_folder, "medallion.png")).convert_alpha()
         self.power_up_img = pg.image.load(path.join(self.img_folder, "slapjuice.png")).convert_alpha()
+        self.mushroom_img = pg.image.load(path.join(self.img_folder, "chugjug.png")).convert_alpha()
         self.map_data = []
         with open(path.join(game_folder, 'map.txt'), 'rt') as f:
             for line in f:
@@ -48,6 +49,7 @@ class Game:
         self.coin = pg.sprite.Group()
         self.mob = pg.sprite.Group()
         self.power_up = pg.sprite.Group()
+        self.mushroom = pg.sprite.Group()
         # self.player1 = Player(self, 1, 1)
         # for x in range(10, 20):
         #     Wall(self, x, 5)
@@ -68,6 +70,9 @@ class Game:
                 if tile == 'm':
                     print("a mob at", row, col)
                     mob(self, col, row)
+                if tile == 'j':
+                    print("a mushroom at", row, col)
+                    mushroom(self, col, row)
 
     def update(self):
         self.all_sprites.update()
