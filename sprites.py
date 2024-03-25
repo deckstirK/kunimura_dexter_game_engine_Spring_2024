@@ -100,7 +100,7 @@ class Player(pg.sprite.Sprite):
                 print(hits[0].__class__.__name__)
                 self.speed -= 150
                 #changing the player to a pained expression upon stepping on the trap
-                self.image = self.game.newplayer_img
+                self.image = self.game.trapped_img
                 #update the player's rect to the new image
                 self.rect = self.image.get_rect()
 
@@ -190,6 +190,7 @@ class mushroom(pg.sprite.Sprite):
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
 
+#designing the size and looks of the trap
 class trap(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.trap

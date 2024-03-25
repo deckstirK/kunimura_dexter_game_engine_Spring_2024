@@ -3,7 +3,7 @@
 '''
 add sprites
 add more power ups (THE MUSHROOM!!!!!!!)
-make moving mob
+add a hallway
 '''
 #import libraries and modules
 import pygame as pg
@@ -14,7 +14,7 @@ import sys
 from os import path
 # from maps import *
 
-LEVEL1 = "map.txt"
+LEVEL1 = "level1.txt"
 LEVEL2 = "level2.txt"
 #define game class
 class Game:
@@ -36,7 +36,7 @@ class Game:
         self.game_folder = path.dirname(__file__)
         self.img_folder = path.join(self.game_folder, 'images')
         self.player_img = pg.image.load(path.join(self.img_folder, "smile.png")).convert_alpha()
-        self.newplayer_img = pg.image.load(path.join(self.img_folder, "anguish.png")).convert_alpha()
+        self.trapped_img = pg.image.load(path.join(self.img_folder, "anguish.png")).convert_alpha()
         self.mob_img = pg.image.load(path.join(self.img_folder, "stoic.png")).convert_alpha()
         self.coin_img = pg.image.load(path.join(self.img_folder, "medallion.png")).convert_alpha()
         self.power_up_img = pg.image.load(path.join(self.img_folder, "slapjuice.png")).convert_alpha()
