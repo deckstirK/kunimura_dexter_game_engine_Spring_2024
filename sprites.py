@@ -42,6 +42,7 @@ class Player(pg.sprite.Sprite):
         self.x = x * TILESIZE
         self.y = y * TILESIZE
         self.moneybag = 0
+        self.level2spawn = 0
         self.speed = 300
     
     #making the movement controls for the player
@@ -113,6 +114,9 @@ class Player(pg.sprite.Sprite):
                 print(hits[0].__class__.__name__)
                 print("collided with mob")
 
+            if str(hits[0].__class__.__name__) == "Level2hallway":
+                self.level2spawn += 1
+
     #making the list for things that get killed (disappear) upon collision
     def update(self):
         self.get_keys()
@@ -127,6 +131,7 @@ class Player(pg.sprite.Sprite):
         self.collide_with_group(self.game.mob, True)
         self.collide_with_group(self.game.mushroom, True)
         self.collide_with_group(self.game.trap, True)
+        self.collide_with_group(self.game.Level2hallway, True)
 
 #designing the size and looks of the wall        
 class Wall(pg.sprite.Sprite):
@@ -198,6 +203,19 @@ class trap(pg.sprite.Sprite):
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
 
+class Level2hallway(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.Level2hallway
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(YELLOW)
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
+
 #brainless mob for when i have to take pictures of it
 # class mob(pg.sprite.Sprite):
 #     def __init__(self, game, x, y):
@@ -239,6 +257,7 @@ class mob(pg.sprite.Sprite):
             if hits:
                 self.vy *= -1
                 self.rect.y = self.y
+
     def update(self):
         pass
         self.x += self.vx * self.game.dt

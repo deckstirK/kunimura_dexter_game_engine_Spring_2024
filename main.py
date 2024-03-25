@@ -12,7 +12,10 @@ from settings import *
 from sprites import *
 import sys
 from os import path
+# from maps import *
 
+LEVEL1 = "map.txt"
+LEVEL2 = "level2.txt"
 #define game class
 class Game:
     #create init functions
@@ -30,8 +33,8 @@ class Game:
     
     #making the sprites for the objects in the game
     def load_data(self):
-        game_folder = path.dirname(__file__)
-        self.img_folder = path.join(game_folder, 'images')
+        self.game_folder = path.dirname(__file__)
+        self.img_folder = path.join(self.game_folder, 'images')
         self.player_img = pg.image.load(path.join(self.img_folder, "smile.png")).convert_alpha()
         self.newplayer_img = pg.image.load(path.join(self.img_folder, "anguish.png")).convert_alpha()
         self.mob_img = pg.image.load(path.join(self.img_folder, "stoic.png")).convert_alpha()
@@ -41,10 +44,11 @@ class Game:
         self.wall_img = pg.image.load(path.join(self.img_folder, "bricks.png")).convert_alpha()
         self.trap_img = pg.image.load(path.join(self.img_folder, "ouchie.png")).convert_alpha()
         self.map_data = []
-        with open(path.join(game_folder, 'map.txt'), 'rt') as f:
+        with open(path.join(self.game_folder, LEVEL1), 'rt') as f:
             for line in f:
                 print(line)
                 self.map_data.append(line)
+
    # Create run method which runs the whole GAME
     def new(self):
         print("create new game...")
@@ -55,10 +59,12 @@ class Game:
         self.power_up = pg.sprite.Group()
         self.mushroom = pg.sprite.Group()
         self.trap = pg.sprite.Group()
+        self.Level2hallway = pg.sprite.Group()
         # self.player1 = Player(self, 1, 1)
         # for x in range(10, 20):
         #     Wall(self, x, 5)
 
+   
         #determining placement features for map making
         for row, tiles in enumerate(self.map_data):
             print(row)
@@ -83,10 +89,11 @@ class Game:
                 if tile == 't':
                     print("a trap at", row, col)
                     trap(self, col, row)
+                if tile == '2':
+                    print("a Level2hallway at", row, col)
+                    Level2hallway(self, col, row)
 
-    def update(self):
-        self.all_sprites.update()
-                    
+    #compiling together all the aforementioned items and preparing them for when you activate the game
     def run(self):
         # 
         self.playing = True
@@ -150,6 +157,53 @@ class Game:
                 if event.type == g.KEYUP:
                     waiting == False
                     # self.running = False
+
+    #making a level change feature
+    def change_level(self, lvl):
+        # kill all existing sprites first to save memory
+        for s in self.all_sprites:
+             s.kill()
+        # reset criteria for changing level
+        self.player.level2spawn = 0
+        # reset map data list to empty
+        self.map_data = []
+        # open next level
+        with open(path.join(self.game_folder, lvl), 'rt') as f:
+            for line in f:
+                print(line)
+                self.map_data.append(line)
+        for row, tiles in enumerate(self.map_data):
+            print(row)
+            for col, tile in enumerate(tiles):
+                print(col)
+                if tile == '1':
+                    print("a wall at", row, col)
+                    Wall(self, col, row)
+                if tile == 'P':
+                    self.player = Player(self, col, row)
+                if tile == 'c':
+                    print("a coin at", row, col)
+                    coin(self, col, row)
+                if tile == 'u':
+                    power_up(self, col, row)
+                if tile == 'm':
+                    print("a mob at", row, col)
+                    mob(self, col, row)
+                if tile == 'j':
+                    print("a mushroom at", row, col)
+                    mushroom(self, col, row)
+                if tile == 't':
+                    print("a trap at", row, col)
+                    trap(self, col, row)
+                if tile == '2':
+                    print("a Level2hallway at", row, col)
+                    Level2hallway(self, col, row)
+
+
+    def update(self):
+            self.all_sprites.update()
+            if self.player.level2spawn > 0:
+                self.change_level(LEVEL2)
 
 #INSTANTIATING!!!! (creating an instance of the game)
 g = Game()
