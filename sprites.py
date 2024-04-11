@@ -3,10 +3,38 @@
 #from (this place) import (everything)
 from settings import *
 import pygame as pg
-from images import *
+from os import path
 # from random import choice
 
+game_folder = path.dirname(__file__)
+img_folder = path.join(game_folder, 'images')
+SPRITESHEET = "theBell.png"
+
 vec =pg.math.Vector2
+
+dir = path.dirname(__file__)
+img_dir = path.join(dir, 'images')
+
+def load_images(self):
+        self.standing_frames = [self.spritesheet.get_image(0,0, 32, 32), 
+                                self.spritesheet.get_image(32,0, 32, 32)]
+        # for frame in self.standing_frames:
+        #     frame.set_colorkey(BLACK)
+
+        # add other frame sets for different poses etc.
+
+class Spritesheet:
+    # utility class for loading and parsing spritesheets
+    def __init__(self, filename):
+        self.spritesheet = pg.image.load(filename).convert()
+
+    def get_image(self, x, y, width, height):
+        # grab an image out of a larger spritesheet
+        image = pg.Surface((width, height))
+        image.blit(self.spritesheet, (0, 0), (x, y, width, height))
+        # image = pg.transform.scale(image, (width, height))
+        image = pg.transform.scale(image, (width * 4, height * 4))
+        return image
 
 def collide_with_walls(sprite, group, dir):
     if dir == 'x':
@@ -37,6 +65,7 @@ class Player(pg.sprite.Sprite):
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image = game.player_img
+        # self.spritesheet = Spritesheet(path.join(img_folder, 'theBell.png'))
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0
         self.x = x * TILESIZE
@@ -106,7 +135,7 @@ class Player(pg.sprite.Sprite):
 
             if str(hits[0].__class__.__name__) == "mushroom":
                 # double the size of the player's image
-                self.image = pg.transform.scale(self.image, (self.image.get_width() * 2, self.image.get_height() * 2))
+                self.image = pg.transform.scale(self.image, (self.image.get_width() * 3, self.image.get_height() * 3))
                 # update the player's rect to match the new size
                 self.rect = self.image.get_rect()
 
