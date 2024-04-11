@@ -31,7 +31,7 @@ class Game:
 
                 # TRANSPLANT THIS
     
-    #making the sprites for the objects in the game
+    # making the sprites for the objects in the game
     def load_data(self):
         self.game_folder = path.dirname(__file__)
         self.img_folder = path.join(self.game_folder, 'images')
@@ -48,8 +48,6 @@ class Game:
             for line in f:
                 print(line)
                 self.map_data.append(line)
-
-   # Create run method which runs the whole GAME
     def new(self):
         print("create new game...")
         self.all_sprites = pg.sprite.Group()
@@ -107,13 +105,12 @@ class Game:
          sys.exit()
 
     #making the method for drawing the grid
-    '''
     def draw_grid(self):
      for x in range (0, WIDTH, TILESIZE):
-            pg.draw.line(self.screen, WHITE, (x,0), (x, HEIGHT))
+            pg.draw.line(self.screen, LIGHTGREY (x,0), (x, HEIGHT))
      for y in range (0, HEIGHT, TILESIZE):
-            pg.draw.line(self.screen, WHITE, (0,y), (WIDTH, y))
-    '''
+            pg.draw.line(self.screen, LIGHTGREY, (0,y), (WIDTH, y))
+
 
     #making the background
     def draw(self):
@@ -127,23 +124,68 @@ class Game:
          for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.quit()
+            if event.type == pg.KEYUP:
+            
+
+                if event.key == pg.K_p:
+                    if not self.paused:
+                        self.paused = True
+                    else:
+                        self.paused = False
+
+    #supposed make the start screen (i didnt make a draw text feature)
+
+    # def start_screen(self):
+    #     running = True
+    #     while running:
+    #         self.screen.fill(WHITE)
+    #         self.draw_text("Simple Game", font, BLACK, WIDTH // 2, HEIGHT // 4)
+    #         self.draw_text("Press SPACE to Start", font, BLACK, WIDTH // 2, HEIGHT // 2)
+    #         self.draw_text("Press ESC to Quit", font, BLACK, WIDTH // 2, HEIGHT * 3 // 4)
+    #         pg.display.update()
+
+    #         for event in pg.event.get():
+    #             if event.type == pg.QUIT:
+    #                 self.quit()
+    #             if event.type == pg.KEYDOWN:
+    #                 if event.key == pg.K_SPACE:
+    #                     running = False
+    #                 if event.key == pg.K_ESCAPE:
+    #                     self.quit()
+
+    # def draw_text(self, text, font, color, x, y):
+    #     text_surface = font.render(text, True, color)
+    #     text_rect = text_surface.get_rect()
+    #     text_rect.center = (x, y)
+    #     self.screen.blit(text_surface, text_rect)
+    #     for event in pg.event.get():
+    #         if event.type == pg.QUIT:
+    #             running = False
+    #             pg.quit()
+    #             sys.exit()
     #         if event.type == pg.KEYDOWN:
-    #             if event.key == pg.K_LEFT:
-    #                 self.player.move(dx=-1)
-    #             if event.key == pg.K_RIGHT:
-    #                 self.player.move(dx=1)
-    #             if event.key == pg.K_DOWN:
-    #                 self.player.move(dy=1)
-    #             if event.key == pg.K_UP:
-    #                 self.player.move(dy=-1)
-    #supposed make the start screen; i didnt make a draw text feature
+    #             if event.key == pg.K_SPACE:
+    #                 # Start the game
+    #                 return
+    #             if event.key == pg.K_ESCAPE:
+    #                 running = False
+    #                 pg.quit()
+    #                 sys.exit()
+    '''
+    def draw_text(self, surface, text, size, color, x, y):
+        font_name = pg.font.match_font('arial')
+        font = pg.font.Font(font_name, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.midtop = (x,y)
+        surface.blit(text_surface, text_rect)
+
     def show_start_screen(self):
         self.screen.fill(BGCOLOR)
-        self.draw_text(self.screen, "This is the start screen", 24, WHITE, WIDTH/2 - 32, 2)
+        self.draw_text(self.screen, "This is the start screen - press any key to play", 24, WHITE, WIDTH/2, HEIGHT/2)
         pg.display.flip()
         self.wait_for_key()
-        
-        pass 
+    '''
 
     #idk what this is for
     def wait_for_key(self):
@@ -156,7 +198,6 @@ class Game:
                     self.quit()
                 if event.type == g.KEYUP:
                     waiting == False
-                    # self.running = False
 
     #making a level change feature
     def change_level(self, lvl):
@@ -212,4 +253,4 @@ g = Game()
 while True:
     g.new()
     g.run()
-    #g.show_go_screen()
+    # g.show_start_screen()
