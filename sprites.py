@@ -118,7 +118,7 @@ class Player(pg.sprite.Sprite):
             if str(hits[0].__class__.__name__) == "Coin":
                 self.moneybag += 1
 
-            if str(hits[0].__class__.__name__) == "power_up":
+            if str(hits[0].__class__.__name__) == "slap_juice":
                 print(hits[0].__class__.__name__)
                 self.speed += 150
                 #changing the player expression back to normal if you stepped on the trap
@@ -133,9 +133,9 @@ class Player(pg.sprite.Sprite):
                 #update the player's rect to the new image
                 self.rect = self.image.get_rect()
 
-            if str(hits[0].__class__.__name__) == "mushroom":
+            if str(hits[0].__class__.__name__) == "chug_jug":
                 # double the size of the player's image
-                self.image = pg.transform.scale(self.image, (self.image.get_width() * 3, self.image.get_height() * 3))
+                self.image = pg.transform.scale(self.image, (self.image.get_width() * 2, self.image.get_height() * 2))
                 # update the player's rect to match the new size
                 self.rect = self.image.get_rect()
 
@@ -156,9 +156,9 @@ class Player(pg.sprite.Sprite):
         self.rect.y = self.y
         self.collide_with_walls('y')
         self.collide_with_group(self.game.coin, True)
-        self.collide_with_group(self.game.power_up, True)
+        self.collide_with_group(self.game.slap_juice, True)
         self.collide_with_group(self.game.mob, True)
-        self.collide_with_group(self.game.mushroom, True)
+        self.collide_with_group(self.game.chug_jug, True)
         self.collide_with_group(self.game.trap, True)
         self.collide_with_group(self.game.Level2hallway, True)
 
@@ -192,13 +192,13 @@ class coin(pg.sprite.Sprite):
         self.rect.y = y * TILESIZE
 
 #designing the size and looks of the power up class
-class power_up(pg.sprite.Sprite):
+class slap_juice(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.power_up
+        self.groups = game.all_sprites, game.slap_juice
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image = game.power_up_img
+        self.image = game.slap_juice_img
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
@@ -206,13 +206,13 @@ class power_up(pg.sprite.Sprite):
         self.rect.y = y * TILESIZE
 
 #designing the size and looks of the mushroom class
-class mushroom(pg.sprite.Sprite):
+class chug_jug(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.mushroom
+        self.groups = game.all_sprites, game.chug_jug
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image = game.mushroom_img
+        self.image = game.chug_jug_img
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y

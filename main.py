@@ -4,6 +4,12 @@
 add sprites
 add more power ups (THE MUSHROOM!!!!!!!)
 add a hallway
+
+
+Beta Goals
+add a shop with a unique look (maybe)
+consistent levels (pick up a coin, return the room, coin gone)
+SOUNDS!
 '''
 #import libraries and modules
 import pygame as pg
@@ -39,8 +45,8 @@ class Game:
         self.trapped_img = pg.image.load(path.join(self.img_folder, "anguish.png")).convert_alpha()
         self.mob_img = pg.image.load(path.join(self.img_folder, "stoic.png")).convert_alpha()
         self.coin_img = pg.image.load(path.join(self.img_folder, "medallion.png")).convert_alpha()
-        self.power_up_img = pg.image.load(path.join(self.img_folder, "slapjuice.png")).convert_alpha()
-        self.mushroom_img = pg.image.load(path.join(self.img_folder, "chugjug.png")).convert_alpha()
+        self.slap_juice_img = pg.image.load(path.join(self.img_folder, "slapjuice.png")).convert_alpha()
+        self.chug_jug_img = pg.image.load(path.join(self.img_folder, "chugjug.png")).convert_alpha()
         self.wall_img = pg.image.load(path.join(self.img_folder, "bricks.png")).convert_alpha()
         self.trap_img = pg.image.load(path.join(self.img_folder, "ouchie.png")).convert_alpha()
         self.map_data = []
@@ -54,8 +60,8 @@ class Game:
         self.walls = pg.sprite.Group()
         self.coin = pg.sprite.Group()
         self.mob = pg.sprite.Group()
-        self.power_up = pg.sprite.Group()
-        self.mushroom = pg.sprite.Group()
+        self.slap_juice = pg.sprite.Group()
+        self.chug_jug = pg.sprite.Group()
         self.trap = pg.sprite.Group()
         self.Level2hallway = pg.sprite.Group()
         # self.player1 = Player(self, 1, 1)
@@ -76,14 +82,15 @@ class Game:
                 if tile == 'c':
                     print("a coin at", row, col)
                     coin(self, col, row)
-                if tile == 'u':
-                    power_up(self, col, row)
+                if tile == 's':
+                    print ("a slapjuice at", row, col)
+                    slap_juice(self, col, row)
                 if tile == 'm':
                     print("a mob at", row, col)
                     mob(self, col, row)
                 if tile == 'j':
-                    print("a mushroom at", row, col)
-                    mushroom(self, col, row)
+                    print("a chug jug at", row, col)
+                    chug_jug(self, col, row)
                 if tile == 't':
                     print("a trap at", row, col)
                     trap(self, col, row)
@@ -225,14 +232,14 @@ class Game:
                 if tile == 'c':
                     print("a coin at", row, col)
                     coin(self, col, row)
-                if tile == 'u':
-                    power_up(self, col, row)
+                if tile == 's':
+                    slap_juice(self, col, row)
                 if tile == 'm':
                     print("a mob at", row, col)
                     mob(self, col, row)
                 if tile == 'j':
-                    print("a mushroom at", row, col)
-                    mushroom(self, col, row)
+                    print("a chug_jug at", row, col)
+                    chug_jug(self, col, row)
                 if tile == 't':
                     print("a trap at", row, col)
                     trap(self, col, row)
