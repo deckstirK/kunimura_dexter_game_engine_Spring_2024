@@ -33,12 +33,21 @@ class Game:
         pg.display.set_caption(TITLE)
         #get pygame clock and start running
         self.clock = pg.time.Clock()
-        self.load_data()
+        self.level_states = {}
+        self.load_data(LEVEL1)
+    def load_level(self, level):
+        # existing code...
+        if level not in self.level_states:
+            self.level_states[level] = {}
+
+        for coin in level.coins:
+            if not self.level_states[level].get(coin.id):
+                coin.spawn()
 
                 # TRANSPLANT THIS
     
     # making the sprites for the objects in the game
-    def load_data(self):
+    def load_data(self, lvl):
         self.game_folder = path.dirname(__file__)
         self.img_folder = path.join(self.game_folder, 'images')
         self.player_img = pg.image.load(path.join(self.img_folder, "smile.png")).convert_alpha()
@@ -50,10 +59,10 @@ class Game:
         self.wall_img = pg.image.load(path.join(self.img_folder, "bricks.png")).convert_alpha()
         self.trap_img = pg.image.load(path.join(self.img_folder, "ouchie.png")).convert_alpha()
         self.map_data = []
-        with open(path.join(self.game_folder, LEVEL1), 'rt') as f:
+        with open(path.join(self.game_folder, lvl), 'rt') as f:
             for line in f:
-                print(line)
-                self.map_data.append(line)
+                self.map_data.append(list(line.strip()))
+
     def new(self):
         print("create new game...")
         self.all_sprites = pg.sprite.Group()
@@ -207,22 +216,45 @@ class Game:
                     waiting == False
 
     #making a level change feature
-    def change_level(self, lvl):
-        # kill all existing sprites first to save memory
+    def change_level(self, lvl, enter_side):
+        # Load new level here...
+        if enter_side == 'right':
+            self.player.rect.x = 0
+        else:  # enter_side == 'left'
+            self.player.rect.x = WIDTH - TILESIZE
+        self.player.rect.y = self.find_spawn_row(self.map_data) * TILESIZE
+     # kill all existing sprites first to save memory
         for s in self.all_sprites:
-             s.kill()
-        # reset criteria for changing level
-        self.player.level2spawn = 0
+            s.kill()
         # reset map data list to empty
         self.map_data = []
         # open next level
         with open(path.join(self.game_folder, lvl), 'rt') as f:
             for line in f:
                 print(line)
-                self.map_data.append(line)
+            self.map_data.append(line)
+        # Set player's position based on the side they entered from
+        if enter_side == 'right':
+            self.player.rect.x = 0
+        else:  # enter_side == 'left'
+            self.player.rect.x = WIDTH - TILESIZE
+        self.player.rect.y = self.find_spawn_row(self.map_data) * TILESIZE
+        
+        self.all_sprites = pg.sprite.Group()
+        self.walls = pg.sprite.Group()
+        self.coins = pg.sprite.Group()
+        self.mobs = pg.sprite.Group()
+        self.traps = pg.sprite.Group()
+        self.chug_jug = pg.sprite.Group()
+        self.slap_juice = pg.sprite.Group()
+        self.load_data(lvl)
+
+        #if self.player is None:
+        self.new()
+
         for row, tiles in enumerate(self.map_data):
             print(row)
-            for col, tile in enumerate(tiles):
+        for col, tile in enumerate(tiles):
                 print(col)
                 if tile == '1':
                     print("a wall at", row, col)
@@ -248,10 +280,21 @@ class Game:
                     Level2hallway(self, col, row)
 
     def update(self):
-            self.all_sprites.update()
-            if self.player.level2spawn > 0:
-                self.change_level(LEVEL2)
+        self.all_sprites.update()
+        player_col = self.player.rect.x // TILESIZE
+        player_row = self.player.rect.y // TILESIZE
+        if (0 <= player_row < len(self.map_data)) and (0 <= player_col < len(self.map_data[0])):
+            if self.map_data[player_row][player_col] == '2':
+                self.change_level(LEVEL2, 'right' if self.player.vx > 0 else 'left')
+            if self.map_data[player_row][player_col] == '3':
+                self.change_level(LEVEL1, 'right' if self.player.vx > 0 else 'left')
 
+    def find_spawn_row(self, level):
+        for row, tiles in enumerate(level):
+            if '3' in tiles:
+                return row
+        return 0  # Default spawn row if no '3' tile is found
+    
 #INSTANTIATING!!!! (creating an instance of the game)
 g = Game()
 #use game method run to run the game

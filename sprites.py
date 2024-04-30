@@ -74,6 +74,13 @@ class Player(pg.sprite.Sprite):
         self.level2spawn = 0
         self.speed = 300
     
+        def interact_with_item(self, item):
+            if isinstance(item, coin) and not self.game.level_states[self.game.current_level].get(item.id):
+            # pick up the item
+                self.game.level_states[self.game.current_level][item.id] = True
+            self.moneybag += 1
+            item.kill()
+
     #making the movement controls for the player
     def get_keys(self):
         self.vx, self.vy = 0, 0
@@ -161,6 +168,17 @@ class Player(pg.sprite.Sprite):
         self.collide_with_group(self.game.chug_jug, True)
         self.collide_with_group(self.game.trap, True)
         self.collide_with_group(self.game.Level2hallway, True)
+
+class Level:
+    def __init__(self):
+        self.items = {'coin': 'not picked up'}
+
+    def update_item_state(self, item, state):
+        self.items[item] = state
+
+    def reset_level(self):
+        for item in self.items:
+            self.items[item] = 'not picked up'
 
 #designing the size and looks of the wall        
 class Wall(pg.sprite.Sprite):
