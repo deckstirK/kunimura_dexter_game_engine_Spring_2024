@@ -247,7 +247,6 @@ class Game:
                     print("a Level2hallway at", row, col)
                     Level2hallway(self, col, row)
 
-
     def update(self):
             self.all_sprites.update()
             if self.player.level2spawn > 0:
