@@ -18,6 +18,7 @@ from settings import *
 from sprites import *
 import sys
 from os import path
+import pickle
 # from maps import *
 
 LEVEL1 = "level1.txt"
@@ -33,18 +34,32 @@ class Game:
         pg.display.set_caption(TITLE)
         #get pygame clock and start running
         self.clock = pg.time.Clock()
-        self.level_states = {}
+        self.level_states = self.load_game('savegame.pickle') or {}
         self.load_data(LEVEL1)
+                       
+    def save_game(self, filename):
+            with open(filename, 'wb') as f:
+                pickle.dump(self.level_states, f)
+    
+    def load_game(self, filename):
+        try:
+            with open(filename, 'rb') as f:
+                return pickle.load(f)
+        except FileNotFoundError:
+            return None
+
     def load_level(self, level):
-        # existing code...
         if level not in self.level_states:
             self.level_states[level] = {}
+        coins_state = self.level_states[level].get('coins', {})
 
         for coin in level.coins:
             if not self.level_states[level].get(coin.id):
                 coin.spawn()
 
-                # TRANSPLANT THIS
+    
+    def leave_level(self, level):
+        self.save_game('savegame.pickle')
     
     # making the sprites for the objects in the game
     def load_data(self, lvl):
@@ -73,6 +88,7 @@ class Game:
         self.chug_jug = pg.sprite.Group()
         self.trap = pg.sprite.Group()
         self.Level2hallway = pg.sprite.Group()
+        self.load_level(LEVEL1)  # Load the first level when starting a new game
         # self.player1 = Player(self, 1, 1)
         # for x in range(10, 20):
         #     Wall(self, x, 5)
@@ -116,6 +132,8 @@ class Game:
             self.events()
             self.update()
             self.draw()
+            if self.player.leave_level():
+                self.leave_level(self.current_level)
     def quit(self):
          pg.quit()
          sys.exit()
@@ -278,6 +296,10 @@ class Game:
                 if tile == '2':
                     print("a Level2hallway at", row, col)
                     Level2hallway(self, col, row)
+
+    def collect_coin(self, level, coin):
+        if level in self.level_states and coin.id in self.level_states[level]:
+            del self.level_states[level][coin.id]
 
     def update(self):
         self.all_sprites.update()

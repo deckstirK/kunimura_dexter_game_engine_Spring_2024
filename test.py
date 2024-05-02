@@ -1,58 +1,83 @@
 import pygame
-from pygame.locals import *
-
-# Define some colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
+import pickle
+import os
 
 # Initialize Pygame
 pygame.init()
 
-# Set up the display
-screen = pygame.display.set_mode((800, 600))
-pygame.display.set_caption("Level Transition Example")
+# Set up the screen
+WIDTH, HEIGHT = 800, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Save and Load Example")
 
-# Define the player
-player_rect = pygame.Rect(50, 50, 30, 30)
+# Define colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
-# Define the gap in the wall
-gap_rect = pygame.Rect(400, 200, 100, 200)
+# Player class
+class Player(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.Surface((50, 50))
+        self.image.fill(WHITE)
+        self.rect = self.image.get_rect()
+        self.rect.center = (WIDTH // 2, HEIGHT // 2)
+        self.speed = 5
+
+    def update(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            self.rect.x -= self.speed
+        if keys[pygame.K_RIGHT]:
+            self.rect.x += self.speed
+        if keys[pygame.K_UP]:
+            self.rect.y -= self.speed
+        if keys[pygame.K_DOWN]:
+            self.rect.y += self.speed
+
+# Initialize player
+player = Player()
+
+# Create sprite groups
+all_sprites = pygame.sprite.Group()
+all_sprites.add(player)
 
 # Main game loop
 running = True
-level = 1
+clock = pygame.time.Clock()
+FPS = 30
+
+# Function to save game state
+def save_game():
+    with open("game_state.pickle", "wb") as f:
+        pickle.dump(player.rect.topleft, f)
+
+# Function to load game state
+def load_game():
+    if os.path.exists("game_state.pickle"):
+        with open("game_state.pickle", "rb") as f:
+            player.rect.topleft = pickle.load(f)
 
 while running:
+    # Handle events
     for event in pygame.event.get():
-        if event.type == QUIT:
+        if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                save_game()
+            elif event.key == pygame.K_l and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                load_game()
 
-    # Player movement
-    keys = pygame.key.get_pressed()
-    if keys[K_LEFT]:
-        player_rect.move_ip(-5, 0)
-    if keys[K_RIGHT]:
-        player_rect.move_ip(5, 0)
-    if keys[K_UP]:
-        player_rect.move_ip(0, -5)
-    if keys[K_DOWN]:
-        player_rect.move_ip(0, 5)
+    # Update
+    all_sprites.update()
 
-    # Check for collision with gap
-    if player_rect.colliderect(gap_rect):
-        # Transition to the next level
-        level += 1
-        gap_rect.y += 300  # Move the gap to a new position
-        player_rect.x = 50  # Reset player position
-        player_rect.y = 50
+    # Draw
+    screen.fill(BLACK)
+    all_sprites.draw(screen)
 
-    # Draw everything
-    screen.fill(WHITE)
-    pygame.draw.rect(screen, BLACK, player_rect)
-    pygame.draw.rect(screen, BLACK, gap_rect)
     pygame.display.flip()
-
-    # Limit the frame rate
-    pygame.time.Clock().tick(60)
+    clock.tick(FPS)
 
 pygame.quit()
+
