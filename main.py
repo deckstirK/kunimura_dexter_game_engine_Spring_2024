@@ -49,14 +49,23 @@ class Game:
             return None
 
     def load_level(self, level):
+        # Load the level data
+        self.load_data(level)
+
+    # Check if level state exists, otherwise initialize it
         if level not in self.level_states:
             self.level_states[level] = {}
+
+    # Load coins state for the level
         coins_state = self.level_states[level].get('coins', {})
-
-        for coin in level.coins:
-            if not self.level_states[level].get(coin.id):
-                coin.spawn()
-
+    
+        for row, tiles in enumerate(self.map_data):
+            for col, tile in enumerate(tiles):
+                if tile == 'c':  # Check if it's a coin tile
+                    coin_id = f"{row}_{col}"  # Generate a unique ID for the coin
+                    coin_spawned = coins_state.get(coin_id, False)  # Check if the coin was collected
+                    if not coin_spawned:
+                        coin(self, col, row)  # Spawn the coin if not collected
     
     def leave_level(self, level):
         self.save_game('savegame.pickle')
