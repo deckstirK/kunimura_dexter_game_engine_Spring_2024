@@ -16,13 +16,15 @@ import pygame as pg
 from random import randint
 from settings import *
 from sprites import *
+from tilemap import *
 import sys
 from os import path
 import pickle
-# from maps import *
 
 LEVEL1 = "level1.txt"
 LEVEL2 = "level2.txt"
+
+levels = [LEVEL1, LEVEL2]
 #define game class
 class Game:
     #create init functions
@@ -35,6 +37,7 @@ class Game:
         #get pygame clock and start running
         self.clock = pg.time.Clock()
         self.level_states = self.load_game('savegame.pickle') or {}
+        self.current_level = 0
         self.load_data(LEVEL1)
                        
     def save_game(self, filename):
@@ -82,6 +85,7 @@ class Game:
         self.chug_jug_img = pg.image.load(path.join(self.img_folder, "chugjug.png")).convert_alpha()
         self.wall_img = pg.image.load(path.join(self.img_folder, "bricks.png")).convert_alpha()
         self.trap_img = pg.image.load(path.join(self.img_folder, "ouchie.png")).convert_alpha()
+        self.map = Map(path.join(game_folder, levels[self.current_level]))
         self.map_data = []
         with open(path.join(self.game_folder, lvl), 'rt') as f:
             for line in f:
@@ -97,10 +101,11 @@ class Game:
         self.chug_jug = pg.sprite.Group()
         self.trap = pg.sprite.Group()
         self.Level2hallway = pg.sprite.Group()
-        self.load_level(LEVEL1)  # Load the first level when starting a new game
+        #Load the first level when starting a new game
         # self.player1 = Player(self, 1, 1)
         # for x in range(10, 20):
         #     Wall(self, x, 5)
+        self.camera = Camera(self.map.width, self.map.height)
 
    
         #determining placement features for map making
@@ -141,8 +146,6 @@ class Game:
             self.events()
             self.update()
             self.draw()
-            if self.player.leave_level():
-                self.leave_level(self.current_level)
     def quit(self):
          pg.quit()
          sys.exit()
@@ -161,6 +164,9 @@ class Game:
         #  self.draw_grid()
          self.all_sprites.draw(self.screen)
          pg.display.flip()
+         for sprite in self.all_sprites:
+            self.screen.blit(sprite.image, self.camera.apply(sprite))
+
 
     #saying what will happen if certain things are done by the player that are outside of the game 
     def events(self):
@@ -178,42 +184,45 @@ class Game:
 
     #supposed make the start screen (i didnt make a draw text feature)
 
-    # def start_screen(self):
-    #     running = True
-    #     while running:
-    #         self.screen.fill(WHITE)
-    #         self.draw_text("Simple Game", font, BLACK, WIDTH // 2, HEIGHT // 4)
-    #         self.draw_text("Press SPACE to Start", font, BLACK, WIDTH // 2, HEIGHT // 2)
-    #         self.draw_text("Press ESC to Quit", font, BLACK, WIDTH // 2, HEIGHT * 3 // 4)
-    #         pg.display.update()
+    def start_screen(self):
+        running = True
+        font = pg.font.Font(None, 32)  # Use the default pygame font with size 32
+        while running:
+            self.screen.fill(WHITE)
+            self.draw_text("Skibidi Toilet 2", font, BLACK, WIDTH // 2, HEIGHT // 4)
+            self.draw_text("Press SPACE to Start", font, BLACK, WIDTH // 2, HEIGHT // 2)
+            self.draw_text("Press ESC to Quit", font, BLACK, WIDTH // 2, HEIGHT * 3 // 4)
+            
+        
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.quit()
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_SPACE:  # Start the game if SPACE is pressed
+                    running = False
+                elif event.key == pg.K_ESCAPE:  # Quit the game if ESC is pressed
+                    self.quit()
 
-    #         for event in pg.event.get():
-    #             if event.type == pg.QUIT:
-    #                 self.quit()
-    #             if event.type == pg.KEYDOWN:
-    #                 if event.key == pg.K_SPACE:
-    #                     running = False
-    #                 if event.key == pg.K_ESCAPE:
-    #                     self.quit()
+        pg.display.update()
 
-    # def draw_text(self, text, font, color, x, y):
-    #     text_surface = font.render(text, True, color)
-    #     text_rect = text_surface.get_rect()
-    #     text_rect.center = (x, y)
-    #     self.screen.blit(text_surface, text_rect)
-    #     for event in pg.event.get():
-    #         if event.type == pg.QUIT:
-    #             running = False
-    #             pg.quit()
-    #             sys.exit()
-    #         if event.type == pg.KEYDOWN:
-    #             if event.key == pg.K_SPACE:
-    #                 # Start the game
-    #                 return
-    #             if event.key == pg.K_ESCAPE:
-    #                 running = False
-    #                 pg.quit()
-    #                 sys.exit()
+    def draw_text(self, text, font, color, x, y):
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.center = (x, y)
+        self.screen.blit(text_surface, text_rect)
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                running = False
+                pg.quit()
+                sys.exit()
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_SPACE:
+                    # Start the game
+                    return
+                if event.key == pg.K_ESCAPE:
+                    running = False
+                    pg.quit()
+                    sys.exit()
     '''
     def draw_text(self, surface, text, size, color, x, y):
         font_name = pg.font.match_font('arial')
@@ -311,7 +320,18 @@ class Game:
             del self.level_states[level][coin.id]
 
     def update(self):
+        x = -self.player.rect.x + int(WIDTH / 2)
+        y = -self.player.rect.y + int(HEIGHT / 2)
+        x = min(0, x)  # left
+        x = max(-(self.width - WIDTH), x)  # right
+        y = min(0, y)  # top
+        y = max(-(self.height - HEIGHT), y)  # bottom
+        self.camera = pg.Rect(x, y, self.width, self.height)
+        running = False
         self.all_sprites.update()
+        while running:
+            self.camera.update(self.player)
+            self.update
         player_col = self.player.rect.x // TILESIZE
         player_row = self.player.rect.y // TILESIZE
         if (0 <= player_row < len(self.map_data)) and (0 <= player_col < len(self.map_data[0])):
