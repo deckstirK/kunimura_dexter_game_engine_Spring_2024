@@ -9,25 +9,31 @@ class Map:
                 self.data.append(line.strip())
         self.tilewidth = len(self.data[0])
         self.tileheight = len(self.data)
+        self.rect = pg.Rect(0, 0, self.tilewidth * TILESIZE, self.tileheight * TILESIZE)
         self.width = self.tilewidth * TILESIZE
         self.height = self.tileheight * TILESIZE
 
 class Camera:
-    def __init__(self, width, height):
-        self.camera = pg.Rect(0, 0, width, height)
-        self.width = width
-        self.height = height
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
-    def apply(self, entity):
-        return entity.rect.move(self.camera.topleft)
-
+    def apply(self, sprite):
+        # Adjust the sprite's position based on the camera's position
+        new_x = sprite.rect.x - self.x
+        new_y = sprite.rect.y - self.y
+        return pg.rect.Rect(new_x, new_y, sprite.rect.width, sprite.rect.height)
     def update(self, target):
-        x = -target.rect.x + int(WIDTH / 2)
-        y = -target.rect.y + int(HEIGHT / 2)
+        # Center the camera on the target
+        x = -target.rect.x + int(self.width / 2)
+        y = -target.rect.y + int(self.height / 2)
+        self.camera.topleft = (x, y)
 
-        # limit scrolling to map size
-        x = min(0, x)  # left
-        y = min(0, y)  # top
-        x = max(-(self.width - WIDTH), x)  # right
-        y = max(-(self.height - HEIGHT), y)  # bottom
+        # Limit scrolling to the map size
+        x = min(0, x)  # Left
+        x = max(-(self.width - WIDTH), x)  # Right
+        y = min(0, y)  # Top
+        y = max(-(self.height - HEIGHT), y)  # Bottom
+
         self.camera = pg.Rect(x, y, self.width, self.height)
+        self.camera.clamp_ip(target.game_map.rect)

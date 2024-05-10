@@ -34,6 +34,7 @@ class Game:
         #sets the size and name of the game window
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
+        self.camera = Camera(WIDTH, HEIGHT)
         #get pygame clock and start running
         self.clock = pg.time.Clock()
         self.level_states = self.load_game('savegame.pickle') or {}
@@ -160,12 +161,13 @@ class Game:
 
     #making the background
     def draw(self):
-         self.screen.fill(BGCOLOR)
-        #  self.draw_grid()
-         self.all_sprites.draw(self.screen)
-         pg.display.flip()
-         for sprite in self.all_sprites:
-            self.screen.blit(sprite.image, self.camera.apply(sprite))
+        self.screen.fill(BGCOLOR)
+        self.all_sprites.draw(self.screen)
+        pg.display.flip()
+        for sprite in self.all_sprites:
+        # Adjust the sprite's position based on the camera's position
+            adjusted_pos = self.camera.apply(sprite)
+            self.screen.blit(sprite.image, adjusted_pos)
 
 
     #saying what will happen if certain things are done by the player that are outside of the game 
@@ -323,10 +325,12 @@ class Game:
         x = -self.player.rect.x + int(WIDTH / 2)
         y = -self.player.rect.y + int(HEIGHT / 2)
         x = min(0, x)  # left
-        x = max(-(self.width - WIDTH), x)  # right
+        x = max(-(self.map.width - WIDTH), x)  # right
         y = min(0, y)  # top
-        y = max(-(self.height - HEIGHT), y)  # bottom
-        self.camera = pg.Rect(x, y, self.width, self.height)
+        y = max(-(self.map.height - HEIGHT), y)  # bottom
+        self.camera = pg.Rect(x, y, self.map.width, self.map.height)
+        self.camera.update(self.player)
+        self.camera.clamp_ip(self.map.rect)
         running = False
         self.all_sprites.update()
         while running:
