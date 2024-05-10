@@ -106,7 +106,7 @@ class Game:
         # self.player1 = Player(self, 1, 1)
         # for x in range(10, 20):
         #     Wall(self, x, 5)
-        self.camera = Camera(self.map.width, self.map.height)
+        self.camera = Camera(WIDTH, HEIGHT)
 
    
         #determining placement features for map making
@@ -140,13 +140,13 @@ class Game:
 
     #compiling together all the aforementioned items and preparing them for when you activate the game
     def run(self):
-        # 
         self.playing = True
         while self.playing:
             self.dt = self.clock.tick(FPS) / 1000
             self.events()
             self.update()
             self.draw()
+
     def quit(self):
          pg.quit()
          sys.exit()
@@ -162,12 +162,13 @@ class Game:
     #making the background
     def draw(self):
         self.screen.fill(BGCOLOR)
-        self.all_sprites.draw(self.screen)
-        pg.display.flip()
+        # self.all_sprites.draw(self.screen)
         for sprite in self.all_sprites:
         # Adjust the sprite's position based on the camera's position
-            adjusted_pos = self.camera.apply(sprite)
-            self.screen.blit(sprite.image, adjusted_pos)
+            # adjusted_sprite_rect = self.camera.apply(sprite)
+            adjusted_sprite_rect = self.camera.apply(sprite)
+            self.screen.blit(sprite.image, adjusted_sprite_rect)
+        pg.display.flip()
 
 
     #saying what will happen if certain things are done by the player that are outside of the game 
@@ -176,8 +177,6 @@ class Game:
             if event.type == pg.QUIT:
                 self.quit()
             if event.type == pg.KEYUP:
-            
-
                 if event.key == pg.K_p:
                     if not self.paused:
                         self.paused = True
@@ -322,20 +321,23 @@ class Game:
             del self.level_states[level][coin.id]
 
     def update(self):
+        # Update camera position
         x = -self.player.rect.x + int(WIDTH / 2)
         y = -self.player.rect.y + int(HEIGHT / 2)
         x = min(0, x)  # left
         x = max(-(self.map.width - WIDTH), x)  # right
         y = min(0, y)  # top
         y = max(-(self.map.height - HEIGHT), y)  # bottom
-        self.camera = pg.Rect(x, y, self.map.width, self.map.height)
         self.camera.update(self.player)
-        self.camera.clamp_ip(self.map.rect)
-        running = False
+    
+        # Clamp camera position within map bounds
+        self.camera.x = min(0, max(-(self.map.width - WIDTH), self.camera.x))
+        self.camera.y = min(0, max(-(self.map.height - HEIGHT), self.camera.y))
+    
+        # Update all sprites
         self.all_sprites.update()
-        while running:
-            self.camera.update(self.player)
-            self.update
+    
+        # Check for level transition
         player_col = self.player.rect.x // TILESIZE
         player_row = self.player.rect.y // TILESIZE
         if (0 <= player_row < len(self.map_data)) and (0 <= player_col < len(self.map_data[0])):
@@ -343,6 +345,7 @@ class Game:
                 self.change_level(LEVEL2, 'right' if self.player.vx > 0 else 'left')
             if self.map_data[player_row][player_col] == '3':
                 self.change_level(LEVEL1, 'right' if self.player.vx > 0 else 'left')
+
 
     def find_spawn_row(self, level):
         for row, tiles in enumerate(level):
