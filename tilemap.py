@@ -24,6 +24,7 @@ class Camera:
     #     new_x = sprite.rect.x - self.x
     #     new_y = sprite.rect.y - self.y
     #     return pg.rect.Rect(new_x, new_y, sprite.rect.width, sprite.rect.height)
+    
     def apply(self, target):
         return target.rect.move(self.camera.topleft)
     

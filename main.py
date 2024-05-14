@@ -331,8 +331,8 @@ class Game:
         self.camera.update(self.player)
     
         # Clamp camera position within map bounds
-        self.camera.x = min(0, max(-(self.map.width - WIDTH), self.camera.x))
-        self.camera.y = min(0, max(-(self.map.height - HEIGHT), self.camera.y))
+        # self.camera.x = min(0, max(-(self.map.width - WIDTH), self.camera.x))
+        # self.camera.y = min(0, max(-(self.map.height - HEIGHT), self.camera.y))
     
         # Update all sprites
         self.all_sprites.update()
