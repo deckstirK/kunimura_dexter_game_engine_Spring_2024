@@ -3,6 +3,7 @@
 #from (this place) import (everything)
 from settings import *
 import pygame as pg
+from healthbar import *
 from os import path
 # from random import choice
 
@@ -73,6 +74,7 @@ class Player(pg.sprite.Sprite):
         self.moneybag = 0
         self.level2spawn = 0
         self.speed = 300
+        self.hitpoints = 100
     
         def interact_with_item(self, item):
             if isinstance(item, coin) and not self.game.level_states[self.game.current_level].get(item.id):
@@ -128,6 +130,7 @@ class Player(pg.sprite.Sprite):
             if str(hits[0].__class__.__name__) == "slap_juice":
                 print(hits[0].__class__.__name__)
                 self.speed += 150
+                self.hitpoints += 50
                 #changing the player expression back to normal if you stepped on the trap
                 self.image = self.game.player_img
                 self.rect = self.image.get_rect()
@@ -135,6 +138,7 @@ class Player(pg.sprite.Sprite):
             if str(hits[0].__class__.__name__) == "trap":
                 print(hits[0].__class__.__name__)
                 self.speed -= 150
+                self.hitpoints -= 50
                 #changing the player to a pained expression upon stepping on the trap
                 self.image = self.game.trapped_img
                 #update the player's rect to the new image
@@ -149,6 +153,7 @@ class Player(pg.sprite.Sprite):
             if str(hits[0].__class__.__name__) == "mob":
                 print(hits[0].__class__.__name__)
                 print("collided with mob")
+                self.hitpoints -= 10
 
             if str(hits[0].__class__.__name__) == "Level2hallway":
                 self.level2spawn += 1
@@ -164,7 +169,6 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls('y')
         self.collide_with_group(self.game.coin, True)
         self.collide_with_group(self.game.slap_juice, True)
-        self.collide_with_group(self.game.mob, True)
         self.collide_with_group(self.game.chug_jug, True)
         self.collide_with_group(self.game.trap, True)
         self.collide_with_group(self.game.Level2hallway, True)

@@ -20,9 +20,21 @@ from tilemap import *
 import sys
 from os import path
 import pickle
+from healthbar import *
 
 LEVEL1 = "level1.txt"
 LEVEL2 = "level2.txt"
+
+def draw_health_bar(surf, x, y, pct):
+    if pct < 0:
+        pct = 0
+    BAR_LENGTH = 32
+    BAR_HEIGHT = 10
+    fill = (pct / 100) * BAR_LENGTH
+    outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
+    fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
+    pg.draw.rect(surf, GREEN, fill_rect)
+    pg.draw.rect(surf, WHITE, outline_rect, 2)
 
 levels = [LEVEL1, LEVEL2]
 #define game class
@@ -168,6 +180,7 @@ class Game:
             # adjusted_sprite_rect = self.camera.apply(sprite)
             adjusted_sprite_rect = self.camera.apply(sprite)
             self.screen.blit(sprite.image, adjusted_sprite_rect)
+            draw_health_bar(self.screen, self.player.rect.x, self.player.rect.y-8, self.player.hitpoints)  
         pg.display.flip()
 
 
@@ -329,6 +342,9 @@ class Game:
         y = min(0, y)  # top
         y = max(-(self.map.height - HEIGHT), y)  # bottom
         self.camera.update(self.player)
+        if self.player.hitpoints < 1:
+            pg.quit()
+            sys.exit()
     
         # Clamp camera position within map bounds
         # self.camera.x = min(0, max(-(self.map.width - WIDTH), self.camera.x))
