@@ -1,3 +1,4 @@
+import pygame as pg
 WIDTH = 1024
 HEIGHT = 768
 
@@ -17,6 +18,9 @@ YELLOW = (255,255,0)
 WHITE = (255,255,255)
 PURPLE = (106,13,173)
 
+MOB_BASE_SPEED = 100
+MOB_HIT_RECT = pg.Rect(0,0,96,96)
+MOB_HITPOINTS = 32
 
 #player settings
 #PLAYER_SPEED = 300

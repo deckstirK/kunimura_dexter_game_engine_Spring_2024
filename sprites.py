@@ -75,13 +75,12 @@ class Player(pg.sprite.Sprite):
         self.level2spawn = 0
         self.speed = 300
         self.hitpoints = 100
-    
-        def interact_with_item(self, item):
-            if isinstance(item, coin) and not self.game.level_states[self.game.current_level].get(item.id):
-            # pick up the item
-                self.game.level_states[self.game.current_level][item.id] = True
-            self.moneybag += 1
-            item.kill()
+        self.weapon_drawn = False
+        self.weapon_dir = (0,0)
+        self.dir = vec(0,0)
+        self.weapon_type = ""
+        self.weapon = Weapon(self.game, self.weapon_type, self.rect.x, self.rect.y, 16, 16, (0,0))
+        self.swinging = False
 
     #making the movement controls for the player
     def get_keys(self):
@@ -98,6 +97,15 @@ class Player(pg.sprite.Sprite):
         if self.vx != 0 and self.vy != 0:
             self.vx *= 0.7071
             self.vy *= 0.7071
+        if keys[pg.K_e]:
+            if not self.swinging:
+                self.swinging = True  # Set swinging flag to true
+                if self.weapon:
+                    self.weapon.swing()  # Trigger the swing animation
+
+    def get_mouse(self):
+        if pg.mouse.get_pressed()[0]:
+            self.weapon = Weapon(self.game, self.weapon_type, self.rect.x+TILESIZE*self.dir[0], self.rect.y+TILESIZE*self.dir[1], abs(self.dir[0]*32+5), abs(self.dir[1]*32+5), self.dir)
 
     #lays down rules for what happens when you hit a wall (hit a wall=cannot move in that direction)
     def collide_with_walls(self, dir):
@@ -151,9 +159,8 @@ class Player(pg.sprite.Sprite):
                 self.rect = self.image.get_rect()
 
             if str(hits[0].__class__.__name__) == "mob":
-                print(hits[0].__class__.__name__)
-                print("collided with mob")
-                self.hitpoints -= 10
+                self.hitpoints -= 1
+                hits[0].health -= 1
 
             if str(hits[0].__class__.__name__) == "Level2hallway":
                 self.level2spawn += 1
@@ -164,6 +171,7 @@ class Player(pg.sprite.Sprite):
         self.x += self.vx * self.game.dt
         self.y += self.vy * self.game.dt
         self.rect.x = self.x
+        self.get_mouse()
         self.collide_with_walls('x')
         self.rect.y = self.y
         self.collide_with_walls('y')
@@ -172,17 +180,16 @@ class Player(pg.sprite.Sprite):
         self.collide_with_group(self.game.chug_jug, True)
         self.collide_with_group(self.game.trap, True)
         self.collide_with_group(self.game.Level2hallway, True)
+        if not self.weapon_drawn:
+            if self.weapon:
+                self.weapon.kill()
+                self.weapon = None
 
-class Level:
-    def __init__(self):
-        self.items = {'coin': 'not picked up'}
+        if self.swinging and self.weapon:
+            if self.weapon.swinging_animation_finished():
+                self.weapon.return_to_original_position()  # Return sword to original position
+                self.swinging = False
 
-    def update_item_state(self, item, state):
-        self.items[item] = state
-
-    def reset_level(self):
-        for item in self.items:
-            self.items[item] = 'not picked up'
 
 #designing the size and looks of the wall        
 class Wall(pg.sprite.Sprite):
@@ -268,6 +275,76 @@ class Level2hallway(pg.sprite.Sprite):
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
 
+class Weapon(pg.sprite.Sprite):
+    def __init__(self, game, typ, x, y, w, h, dir):
+        self.groups = game.all_sprites, game.weapons
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image = game.basic_sword_img
+        self.rect = self.image.get_rect()
+        self.vx, self.vy = 0, 0
+        self.x = x
+        self.y = y
+        self.rect.x = x
+        self.rect.y = y
+        self.w = w
+        self.h = h
+        self.rect.width = w
+        self.rect.height = h
+        self.pos = vec(x,y)
+        self.dir = dir
+        self.typ = typ
+        self.original_x = x  # Store original x position
+        self.original_y = y  # Store original y position
+        self.swinging_duration = 0.2  # Duration of swing animation in seconds
+        self.swinging_timer = 0  # Timer for swing animation
+        print("I created a sword")
+    def collide_with_group(self, group, kill):
+        hits = pg.sprite.spritecollide(self, group, kill)
+        if hits:
+            if str(hits[0].__class__.__name__) == "mob":
+                print("you hurt a mob!")
+                hits[0].hitpoints -= 1
+            # if str(hits[0].__class__.__name__) == "Mob2":
+            #     print("you hurt a mob!")
+            #     hits[0].hitpoints -= 1
+            if str(hits[0].__class__.__name__) == "Wall":
+                print("you hit a wall")
+
+    def swing(self):
+        # Set swinging animation start time
+        self.swinging_timer = pg.time.get_ticks()
+    
+    def swinging_animation_finished(self):
+        # Check if swinging animation duration has elapsed
+        return (pg.time.get_ticks() - self.swinging_timer) / 1000 > self.swinging_duration
+    
+    def return_to_original_position(self):
+        # Return sword to original position
+        self.rect.x = self.original_x
+        self.rect.y = self.original_y
+                
+    def track(self, obj):
+        self.vx = obj.vx
+        self.vy = obj.vy
+        # self.rect.width = obj.rect.x+self.dir[0]*32+5
+        # self.rect.width = obj.rect.y*self.dir[1]*32+5
+    def update(self):
+        if not self.game.player.weapon_drawn:  # Check if weapon should be drawn
+            self.kill()  # Kill the weapon if not drawn
+            return
+        self.track(self.game.player)
+        self.x += self.vx * self.game.dt
+        self.y += self.vy * self.game.dt
+        self.rect.x = self.x
+        self.rect.y = self.y
+        self.collide_with_group(self.game.mob, False)
+        self.collide_with_group(self.game.walls, True)
+        # hits = pg.sprite.spritecollide(self, self.game.mobs, False)
+        # if hits:
+        #     hits[0].hitpoints -= 1
+
 #brainless mob for when i have to take pictures of it
 # class mob(pg.sprite.Sprite):
 #     def __init__(self, game, x, y):
@@ -291,6 +368,8 @@ class mob(pg.sprite.Sprite):
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.rect = self.image.get_rect()
         self.image = game.mob_img
+        self.hitpoints = MOB_HITPOINTS
+        self.hitpoints = 100
         self.x = x
         self.y = y
         #making the movement and speed of the mob (how fast it moves, its collision, etc.)
@@ -327,6 +406,8 @@ class mob(pg.sprite.Sprite):
         self.collide_with_walls('x')
         self.rect.y = self.y
         self.collide_with_walls('y')
+        if self.hitpoints < 0:
+            self.kill()
 
 #making the pathfinding and pursuing of the player for the mob
 def sensor(self):

@@ -10,6 +10,16 @@ Beta Goals
 add a shop with a unique look (maybe)
 consistent levels (pick up a coin, return the room, coin gone)
 SOUNDS!
+
+FINAL GOAL
+Sword Upgrades: There will be a box or something that will give your sword a random attribute upon collision
+    - Elemental Affinity: Certain enemy types will only be able to be killed by certain elements
+    - Vampirism: The sword will gain small amounts of health from killing enemies
+    - Poison: The sword will have a chance to poison enemies
+    - Stun: The weapon will turn into a hammer and will have a chance to stun enemies
+    - Critical: The sword will have a chance to deal double damage
+    - Lifesteal: The sword will gain health from dealing damage
+    
 '''
 #import libraries and modules
 import pygame as pg
@@ -98,6 +108,7 @@ class Game:
         self.chug_jug_img = pg.image.load(path.join(self.img_folder, "chugjug.png")).convert_alpha()
         self.wall_img = pg.image.load(path.join(self.img_folder, "bricks.png")).convert_alpha()
         self.trap_img = pg.image.load(path.join(self.img_folder, "ouchie.png")).convert_alpha()
+        self.basic_sword_img = pg.image.load(path.join(self.img_folder, "basicsword.png")).convert_alpha()
         self.map = Map(path.join(game_folder, levels[self.current_level]))
         self.map_data = []
         with open(path.join(self.game_folder, lvl), 'rt') as f:
@@ -114,6 +125,7 @@ class Game:
         self.chug_jug = pg.sprite.Group()
         self.trap = pg.sprite.Group()
         self.Level2hallway = pg.sprite.Group()
+        self.weapons = pg.sprite.Group()
         #Load the first level when starting a new game
         # self.player1 = Player(self, 1, 1)
         # for x in range(10, 20):
@@ -195,6 +207,8 @@ class Game:
                         self.paused = True
                     else:
                         self.paused = False
+            if event.type ==pg.MOUSEBUTTONUP:
+                self.player.weapon_drawn = False
 
     #supposed make the start screen (i didnt make a draw text feature)
 
