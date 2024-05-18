@@ -1,4 +1,4 @@
-#This file was created by: Dexter Kunimura
+#This file was created by: Dexter Kunimuraw
 
 '''
 add sprites
@@ -18,7 +18,6 @@ Sword Upgrades: There will be a box or something that will give your sword a ran
     - Poison: The sword will have a chance to poison enemies
     - Stun: The weapon will turn into a hammer and will have a chance to stun enemies
     - Critical: The sword will have a chance to deal double damage
-    - Lifesteal: The sword will gain health from dealing damage
     
 '''
 #import libraries and modules
@@ -279,74 +278,6 @@ class Game:
                 if event.type == g.KEYUP:
                     waiting == False
 
-    #making a level change feature
-    def change_level(self, lvl, enter_side):
-        # Load new level here...
-        if enter_side == 'right':
-            self.player.rect.x = 0
-        else:  # enter_side == 'left'
-            self.player.rect.x = WIDTH - TILESIZE
-        self.player.rect.y = self.find_spawn_row(self.map_data) * TILESIZE
-     # kill all existing sprites first to save memory
-        for s in self.all_sprites:
-            s.kill()
-        # reset map data list to empty
-        self.map_data = []
-        # open next level
-        with open(path.join(self.game_folder, lvl), 'rt') as f:
-            for line in f:
-                print(line)
-            self.map_data.append(line)
-        # Set player's position based on the side they entered from
-        if enter_side == 'right':
-            self.player.rect.x = 0
-        else:  # enter_side == 'left'
-            self.player.rect.x = WIDTH - TILESIZE
-        self.player.rect.y = self.find_spawn_row(self.map_data) * TILESIZE
-        
-        self.all_sprites = pg.sprite.Group()
-        self.walls = pg.sprite.Group()
-        self.coins = pg.sprite.Group()
-        self.mobs = pg.sprite.Group()
-        self.traps = pg.sprite.Group()
-        self.chug_jug = pg.sprite.Group()
-        self.slap_juice = pg.sprite.Group()
-        self.load_data(lvl)
-
-        #if self.player is None:
-        self.new()
-
-        for row, tiles in enumerate(self.map_data):
-            print(row)
-        for col, tile in enumerate(tiles):
-                print(col)
-                if tile == '1':
-                    print("a wall at", row, col)
-                    Wall(self, col, row)
-                if tile == 'P':
-                    self.player = Player(self, col, row)
-                if tile == 'c':
-                    print("a coin at", row, col)
-                    coin(self, col, row)
-                if tile == 's':
-                    slap_juice(self, col, row)
-                if tile == 'm':
-                    print("a mob at", row, col)
-                    mob(self, col, row)
-                if tile == 'j':
-                    print("a chug_jug at", row, col)
-                    chug_jug(self, col, row)
-                if tile == 't':
-                    print("a trap at", row, col)
-                    trap(self, col, row)
-                if tile == '2':
-                    print("a Level2hallway at", row, col)
-                    Level2hallway(self, col, row)
-
-    def collect_coin(self, level, coin):
-        if level in self.level_states and coin.id in self.level_states[level]:
-            del self.level_states[level][coin.id]
-
     def update(self):
         # Update camera position
         x = -self.player.rect.x + int(WIDTH / 2)
@@ -370,18 +301,7 @@ class Game:
         # Check for level transition
         player_col = self.player.rect.x // TILESIZE
         player_row = self.player.rect.y // TILESIZE
-        if (0 <= player_row < len(self.map_data)) and (0 <= player_col < len(self.map_data[0])):
-            if self.map_data[player_row][player_col] == '2':
-                self.change_level(LEVEL2, 'right' if self.player.vx > 0 else 'left')
-            if self.map_data[player_row][player_col] == '3':
-                self.change_level(LEVEL1, 'right' if self.player.vx > 0 else 'left')
 
-
-    def find_spawn_row(self, level):
-        for row, tiles in enumerate(level):
-            if '3' in tiles:
-                return row
-        return 0  # Default spawn row if no '3' tile is found
     
 #INSTANTIATING!!!! (creating an instance of the game)
 g = Game()

@@ -1,83 +1,76 @@
 import pygame
-import pickle
-import os
+import sys
 
 # Initialize Pygame
 pygame.init()
 
 # Set up the screen
-WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Save and Load Example")
+screen_width = 800
+screen_height = 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Health Bar Above Player")
 
-# Define colors
+# Colors
 WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
+RED = (255, 0, 0)
 
 # Player class
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.Surface((50, 50))
-        self.image.fill(WHITE)
+        self.image.fill(RED)
         self.rect = self.image.get_rect()
-        self.rect.center = (WIDTH // 2, HEIGHT // 2)
-        self.speed = 5
+        self.rect.center = (screen_width // 2, screen_height // 2)
+        self.health = 100
 
     def update(self):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
-            self.rect.x -= self.speed
-        if keys[pygame.K_RIGHT]:
-            self.rect.x += self.speed
-        if keys[pygame.K_UP]:
-            self.rect.y -= self.speed
-        if keys[pygame.K_DOWN]:
-            self.rect.y += self.speed
+        pass
 
-# Initialize player
+# Health bar function
+def draw_health_bar(player_pos, player_health):
+    # Calculate the position of the health bar above the player
+    health_bar_width = 50
+    health_bar_height = 10
+    health_bar_x = player_pos[0] - health_bar_width // 2
+    health_bar_y = player_pos[1] - 20  # Adjust this value to position the health bar above the player
+    health_bar_rect = pygame.Rect(health_bar_x, health_bar_y, health_bar_width, health_bar_height)
+    
+    # Draw the health bar background
+    pygame.draw.rect(screen, WHITE, health_bar_rect)
+    
+    # Calculate the width of the health bar based on player's health
+    health_width = health_bar_width * (player_health / 100)
+    health_rect = pygame.Rect(health_bar_x, health_bar_y, health_width, health_bar_height)
+    
+    # Draw the health bar
+    pygame.draw.rect(screen, RED, health_rect)
+
+# Create player object
 player = Player()
 
-# Create sprite groups
-all_sprites = pygame.sprite.Group()
-all_sprites.add(player)
-
-# Main game loop
+# Game loop
 running = True
-clock = pygame.time.Clock()
-FPS = 30
-
-# Function to save game state
-def save_game():
-    with open("game_state.pickle", "wb") as f:
-        pickle.dump(player.rect.topleft, f)
-
-# Function to load game state
-def load_game():
-    if os.path.exists("game_state.pickle"):
-        with open("game_state.pickle", "rb") as f:
-            player.rect.topleft = pickle.load(f)
-
 while running:
-    # Handle events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_CTRL:
-                save_game()
-            elif event.key == pygame.K_l and pygame.key.get_mods() & pygame.KMOD_CTRL:
-                load_game()
-
-    # Update
-    all_sprites.update()
-
-    # Draw
-    screen.fill(BLACK)
-    all_sprites.draw(screen)
-
+    
+    # Update player
+    player.update()
+    
+    # Clear the screen
+    screen.fill((0, 0, 0))
+    
+    # Draw player
+    screen.blit(player.image, player.rect)
+    
+    # Draw health bar above player
+    draw_health_bar(player.rect.center, player.health)
+    
+    # Update display
     pygame.display.flip()
-    clock.tick(FPS)
+    pygame.time.Clock().tick(60)
 
 pygame.quit()
-
+sys.exit()

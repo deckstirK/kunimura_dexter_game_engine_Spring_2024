@@ -76,11 +76,15 @@ class Player(pg.sprite.Sprite):
         self.speed = 300
         self.hitpoints = 100
         self.weapon_drawn = False
+        self.weapon = None
         self.weapon_dir = (0,0)
         self.dir = vec(0,0)
         self.weapon_type = ""
         self.weapon = Weapon(self.game, self.weapon_type, self.rect.x, self.rect.y, 16, 16, (0,0))
         self.swinging = False
+        self.weapon_offset_x = 20 
+        self.weapon_offset_y = 0
+
 
     #making the movement controls for the player
     def get_keys(self):
@@ -97,16 +101,18 @@ class Player(pg.sprite.Sprite):
         if self.vx != 0 and self.vy != 0:
             self.vx *= 0.7071
             self.vy *= 0.7071
+        
         if keys[pg.K_e]:
             if not self.swinging:
-                self.swinging = True  # Set swinging flag to true
+                self.swinging = True
                 if self.weapon:
-                    self.weapon.swing()  # Trigger the swing animation
+                    self.weapon.swing()
 
     def get_mouse(self):
         if pg.mouse.get_pressed()[0]:
-            self.weapon = Weapon(self.game, self.weapon_type, self.rect.x+TILESIZE*self.dir[0], self.rect.y+TILESIZE*self.dir[1], abs(self.dir[0]*32+5), abs(self.dir[1]*32+5), self.dir)
-
+            # Create the weapon at the player's position plus the offset
+            self.weapon = Weapon(self.game, self.weapon_type, self.rect.x + self.weapon_offset_x, self.rect.y + self.weapon_offset_y, 16, 16, self.dir)
+            
     #lays down rules for what happens when you hit a wall (hit a wall=cannot move in that direction)
     def collide_with_walls(self, dir):
         if dir == 'x':
@@ -187,9 +193,8 @@ class Player(pg.sprite.Sprite):
 
         if self.swinging and self.weapon:
             if self.weapon.swinging_animation_finished():
-                self.weapon.return_to_original_position()  # Return sword to original position
+                self.weapon.return_to_original_position()
                 self.swinging = False
-
 
 #designing the size and looks of the wall        
 class Wall(pg.sprite.Sprite):
@@ -305,7 +310,7 @@ class Weapon(pg.sprite.Sprite):
         if hits:
             if str(hits[0].__class__.__name__) == "mob":
                 print("you hurt a mob!")
-                hits[0].hitpoints -= 1
+                hits[0].hitpoints -= 10
             # if str(hits[0].__class__.__name__) == "Mob2":
             #     print("you hurt a mob!")
             #     hits[0].hitpoints -= 1
@@ -313,17 +318,34 @@ class Weapon(pg.sprite.Sprite):
                 print("you hit a wall")
 
     def swing(self):
-        # Set swinging animation start time
-        self.swinging_timer = pg.time.get_ticks()
-    
+        self.swinging = True
+        self.angle = 45 if self.direction == vec(1, 0) else -45 if self.direction == vec(-1, 0) else 0
+
     def swinging_animation_finished(self):
-        # Check if swinging animation duration has elapsed
-        return (pg.time.get_ticks() - self.swinging_timer) / 1000 > self.swinging_duration
-    
+        # This function should return True if the swinging animation is finished
+        # Placeholder logic for animation duration or other criteria
+        return True
+
     def return_to_original_position(self):
-        # Return sword to original position
-        self.rect.x = self.original_x
-        self.rect.y = self.original_y
+        self.angle = 0
+        self.image = self.original_image
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+
+    def update(self):
+        if self.swinging:
+            self.rotate_weapon()
+
+    def rotate_weapon(self):
+        # Store the current center of the weapon
+        old_center = self.rect.center
+        # Rotate the weapon image
+        self.image = pg.transform.rotate(self.original_image, self.angle)
+        # Update the rect with the new image dimensions
+        self.rect = self.image.get_rect()
+        # Restore the rect's center to the old center
+        self.rect.center = old_center
                 
     def track(self, obj):
         self.vx = obj.vx
