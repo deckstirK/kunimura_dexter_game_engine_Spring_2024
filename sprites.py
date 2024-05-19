@@ -9,6 +9,7 @@ from os import path
 
 game_folder = path.dirname(__file__)
 img_folder = path.join(game_folder, 'images')
+SWING_DURATION_IN_MS = 500
 SPRITESHEET = "theBell.png"
 
 vec =pg.math.Vector2
@@ -176,8 +177,7 @@ class Player(pg.sprite.Sprite):
                 self.rect = self.image.get_rect()
 
             if str(hits[0].__class__.__name__) == "mob":
-                self.hitpoints -= 1
-                hits[0].health -= 1
+                self.hitpoints -= 40
 
     #making the list for things that get killed (disappear) upon collision
     def update(self):
@@ -193,20 +193,27 @@ class Player(pg.sprite.Sprite):
         self.collide_with_group(self.game.slap_juice, True)
         self.collide_with_group(self.game.chug_jug, True)
         self.collide_with_group(self.game.trap, True)
+        self.collide_with_group(self.game.mob, True)
         self.collide_with_group(self.game.Level2hallway, True)
 
         if self.weapon:
             if self.weapon_drawn:
                 self.weapon.rect.x = self.rect.x + self.weapon_offset_x
                 self.weapon.rect.y = self.rect.y + self.weapon_offset_y
-            else:
-                self.weapon.kill()
+            # Update weapon's position when drawn
+        else:
+            if self.weapon:
+                self.weapon.kill()  # Kill the weapon if not drawn
                 self.weapon = None
 
         if self.swinging and self.weapon:
             if self.weapon.swinging_animation_finished():
                 self.weapon.return_to_original_position()
                 self.swinging = False
+            # Reset swinging animation after completion
+        else:
+            self.weapon.update()
+            # Update the weapon's position and rotation during swinging animation
 
 #designing the size and looks of the wall        
 class Wall(pg.sprite.Sprite):
@@ -301,26 +308,35 @@ class Weapon(pg.sprite.Sprite):
         self.typ = typ
         self.original_x = x
         self.original_y = y
-        self.swinging_duration = 0.2
-        self.swinging_timer = 0
         self.angle = 0  # Angle for swinging animation
         self.swinging = False
 
     def swing(self):
         self.swinging = True
-        # Set the swinging angle based on the direction
+        self.swing_start_time = pg.time.get_ticks()  # Store the start time of the swing animation
         self.angle = 90 if self.dir == (1, 0) else -90 if self.dir == (-1, 0) else 0
 
     def swinging_animation_finished(self):
-        # Placeholder logic for animation duration or other criteria
-        return True
-
+        # Check if the time elapsed since the swing started is greater than the swing duration
+        if pg.time.get_ticks() - self.swing_start_time > SWING_DURATION_IN_MS:
+            self.swinging = False  # Set swinging to False when animation is finished
+            return True
+        return False
+    
     def return_to_original_position(self):
         self.angle = 0
 
     def update(self):
         if self.swinging:
             self.rotate_weapon()
+
+            # Calculate the elapsed time since the swing started
+            elapsed_time = pg.time.get_ticks() - self.swing_start_time
+
+            # Check if the elapsed time exceeds the swing duration
+            if elapsed_time > SWING_DURATION_IN_MS:
+                self.swinging = False
+                self.return_to_original_position()
 
     def rotate_weapon(self):
         old_center = self.rect.center
