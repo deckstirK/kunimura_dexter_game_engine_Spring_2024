@@ -14,7 +14,7 @@ SOUNDS!
 FINAL GOAL
 Sword Upgrades: There will be a box or something that will give your sword a random attribute upon collision
     - Elemental Affinity: Certain enemy types will only be able to be killed by certain elements
-    - Vampirism: The sword will gain small amounts of health from killing enemies
+    - Vampirism: The sword will gain small amounts of health from hurting enemies
     - Poison: The sword will have a chance to poison enemies
     - Stun: The weapon will turn into a hammer and will have a chance to stun enemies
     - Critical: The sword will have a chance to deal double damage
@@ -157,9 +157,6 @@ class Game:
                 if tile == 't':
                     print("a trap at", row, col)
                     trap(self, col, row)
-                if tile == '2':
-                    print("a Level2hallway at", row, col)
-                    Level2hallway(self, col, row)
 
     #compiling together all the aforementioned items and preparing them for when you activate the game
     def run(self):
