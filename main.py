@@ -2,7 +2,7 @@
 
 '''
 add sprites
-add more power ups (THE MUSHROOM!!!!!!!)
+add more power ups (THE aUSHROOM!!!!!!!)
 add a hallway
 
 
@@ -109,6 +109,10 @@ class Game:
         self.basic_sword_img = pg.image.load(path.join(self.img_folder, "basicsword.png")).convert_alpha()
         self.hurt_mob_img = pg.image.load(path.join(self.img_folder, "hurtmob.png")).convert_alpha()
         self.sword_fusion_img = pg.image.load(path.join(self.img_folder, "crystal.png")).convert_alpha()
+        self.bloodthirsty_saw_img = pg.image.load(path.join(self.img_folder, "bloodthirstysaw.png")).convert_alpha()
+        self.mighty_axe_img = pg.image.load(path.join(self.img_folder, "mightyaxe.png")).convert_alpha()
+        self.toxic_blade_img = pg.image.load(path.join(self.img_folder, "toxicblade.png")).convert_alpha()
+        self.vorpal_blade_img = pg.image.load(path.join(self.img_folder, "vorpalblade.png")).convert_alpha()
         self.map = Map(path.join(game_folder, levels[self.current_level]))
         self.map_data = []
         with open(path.join(self.game_folder, lvl), 'rt') as f:

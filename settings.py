@@ -22,7 +22,7 @@ MOB_BASE_SPEED = 100
 MOB_HIT_RECT = pg.Rect(0,0,96,96)
 MOB_HITPOINTS = 3000
 
-SWORD_FUSIONS = ["Bloodthirsty", "Mighty", "Vorpal", "Toxic", "Burning", "Frozen"]
+SWORD_FUSIONS = ["Bloodthirsty", "Mighty", "Vorpal", "Toxic", "Burning", "Chilled"]
 
 #player settings
 #PLAYER_SPEED = 300

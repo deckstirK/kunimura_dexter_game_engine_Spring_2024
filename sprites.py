@@ -5,6 +5,7 @@ from settings import *
 import pygame as pg
 from healthbar import *
 from os import path
+from random import choice
 # from random import choice
 
 game_folder = path.dirname(__file__)
@@ -81,6 +82,12 @@ class Player(pg.sprite.Sprite):
         self.weapon_offset_x = 20 
         self.weapon_offset_y = 0
         self.dir = vec(1, 0)
+        self.status = ""
+
+        def set_status(self, status):
+            self.status = status
+            if self.weapon:
+                self.weapon.update_image()
 
     def get_keys(self):
         self.vx, self.vy = 0, 0
@@ -145,7 +152,26 @@ class Player(pg.sprite.Sprite):
                 self.moneybag += 1
 
             if str(hits[0].__class__.__name__) == "swordfusion":
-                self.moneybag += 1
+                fusion = choice(SWORD_FUSIONS)
+                if fusion == "Bloodthirsty":
+                    self.status = "Bloodthirsty"
+                    print("Bloodthirsty")
+                if fusion == "Mighty":
+                    self.status = "Mighty"
+                    print("Mighty")
+                if fusion == "Vorpal":
+                    self.status = "Vorpal"
+                    print("Vorpal")
+                if fusion == "Toxic":
+                    self.status = "Toxic"
+                    print("Toxic")
+                if fusion == "Burning":
+                    self.status = "Burning"
+                    print("Burning")
+                if fusion == "Chilled":
+                    self.status = "Chilled"
+                    print("Chilled")
+
 
             if str(hits[0].__class__.__name__) == "slap_juice":
                 print(hits[0].__class__.__name__)
@@ -277,6 +303,7 @@ class Weapon(pg.sprite.Sprite):
         self.game = game
         self.image = pg.Surface((w, h), pg.SRCALPHA)
         self.image = game.basic_sword_img
+        self.update_image()
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -290,6 +317,26 @@ class Weapon(pg.sprite.Sprite):
         self.angle = 0  # Angle for swinging animation
         self.swinging = False
         self.swing_start_time = 0
+
+    def update_image(self):
+        if self.game.player.status == "Bloodthirsty":
+            self.image = self.game.bloodthirsty_saw_img
+            # self.rect = self.image.get_rect()
+            
+        elif self.game.player.status == "Mighty":
+            self.image = self.game.mighty_axe_img
+            # self.rect = self.image.get_rect()
+
+        elif self.game.player.status == "Toxic":
+            self.image = self.game.toxic_blade_img
+            # self.rect = self.image.get_rect()
+
+        elif self.game.player.status == "Vorpal":
+            self.image = self.game.vorpal_blade_img
+            # self.rect = self.image.get_rect()
+        else:
+            self.image = self.game.basic_sword_img
+        self.original_image = self.image.copy()
 
 
     def swing(self):
@@ -310,6 +357,7 @@ class Weapon(pg.sprite.Sprite):
         self.rect.topleft = self.original_pos
     
     def update(self):
+        self.update_image()
         if self.swinging:
             self.rotate_weapon()
             elapsed_time = pg.time.get_ticks() - self.swing_start_time
@@ -349,6 +397,14 @@ class Weapon(pg.sprite.Sprite):
         hits = pg.sprite.spritecollide(self, self.game.mob, False)
         for hit in hits:
                 hit.hitpoints -= 5
+                if self.game.player.status == "Bloodthirsty":
+                    self.game.player.hitpoints += 0.1  # Gain 2 health points per hit
+                # Ensure the player's health does not exceed the maximum health limit, e.g., 100
+                    self.game.player.hitpoints = min(self.game.player.hitpoints, 100)
+
+                if self.game.player.status == "Mighty":
+                    hit.stun(3000)
+            
 
 
 class swordfusion(pg.sprite.Sprite):
@@ -381,6 +437,9 @@ class mob(pg.sprite.Sprite):
         self.x = x * TILESIZE
         self.y = y * TILESIZE
         self.speed = 0
+        self.stunned = False
+        self.stun_end_time = 0
+
     def collide_with_walls(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
@@ -394,6 +453,11 @@ class mob(pg.sprite.Sprite):
                 self.rect.y = self.y
 
     def update(self):
+        if self.stunned and pg.time.get_ticks() < self.stun_end_time:
+            return  # If stunned, do nothing
+        else:
+            self.stunned = False
+
         pass
         self.x += self.vx * self.game.dt
         self.y += self.vy * self.game.dt
@@ -414,6 +478,10 @@ class mob(pg.sprite.Sprite):
             self.kill()
         if self.hitpoints < 1000:
             print("ambatudieee")
+
+    def stun(self, duration):
+        self.stunned = True
+        self.stun_end_time = pg.time.get_ticks() + duration
 
 #making the pathfinding and pursuing of the player for the mob
 def sensor(self):
