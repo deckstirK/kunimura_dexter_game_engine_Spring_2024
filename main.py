@@ -37,8 +37,8 @@ LEVEL2 = "level2.txt"
 def draw_health_bar(surf, x, y, pct):
     if pct < 0:
         pct = 0
-    BAR_LENGTH = 32
-    BAR_HEIGHT = 10
+    BAR_LENGTH = 100  # Length of the health bar
+    BAR_HEIGHT = 10   # Height of the health bar
     fill = (pct / 100) * BAR_LENGTH
     outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
     fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
@@ -91,7 +91,6 @@ class Game:
                     coin_spawned = coins_state.get(coin_id, False)  # Check if the coin was collected
                     if not coin_spawned:
                         coin(self, col, row)  # Spawn the coin if not collected
-    
     def leave_level(self, level):
         self.save_game('savegame.pickle')
     
@@ -108,6 +107,8 @@ class Game:
         self.wall_img = pg.image.load(path.join(self.img_folder, "bricks.png")).convert_alpha()
         self.trap_img = pg.image.load(path.join(self.img_folder, "ouchie.png")).convert_alpha()
         self.basic_sword_img = pg.image.load(path.join(self.img_folder, "basicsword.png")).convert_alpha()
+        self.hurt_mob_img = pg.image.load(path.join(self.img_folder, "hurtmob.png")).convert_alpha()
+        self.sword_fusion_img = pg.image.load(path.join(self.img_folder, "crystal.png")).convert_alpha()
         self.map = Map(path.join(game_folder, levels[self.current_level]))
         self.map_data = []
         with open(path.join(self.game_folder, lvl), 'rt') as f:
@@ -125,6 +126,7 @@ class Game:
         self.trap = pg.sprite.Group()
         self.Level2hallway = pg.sprite.Group()
         self.weapons = pg.sprite.Group()
+        self.swordfusion = pg.sprite.Group()
         #Load the first level when starting a new game
         # self.player1 = Player(self, 1, 1)
         # for x in range(10, 20):
@@ -157,6 +159,9 @@ class Game:
                 if tile == 't':
                     print("a trap at", row, col)
                     trap(self, col, row)
+                if tile == 'f':
+                    print("a swordfusion at", row, col)
+                    swordfusion(self, col, row)
 
     #compiling together all the aforementioned items and preparing them for when you activate the game
     def run(self):
@@ -182,13 +187,13 @@ class Game:
     #making the background
     def draw(self):
         self.screen.fill(BGCOLOR)
-        # self.all_sprites.draw(self.screen)
         for sprite in self.all_sprites:
-        # Adjust the sprite's position based on the camera's position
-            # adjusted_sprite_rect = self.camera.apply(sprite)
             adjusted_sprite_rect = self.camera.apply(sprite)
             self.screen.blit(sprite.image, adjusted_sprite_rect)
-            draw_health_bar(self.screen, self.player.rect.x, self.player.rect.y-8, self.player.hitpoints)  
+        
+        # Draw the health bar in the top-left corner
+        draw_health_bar(self.screen, 10, 10, self.player.hitpoints)
+        
         pg.display.flip()
 
 
@@ -307,4 +312,4 @@ g = Game()
 while True:
     g.new()
     g.run()
-    # g.show_start_screen()
+    # g.show_start_screen()a

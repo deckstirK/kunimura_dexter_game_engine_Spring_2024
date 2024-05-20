@@ -20,7 +20,9 @@ PURPLE = (106,13,173)
 
 MOB_BASE_SPEED = 100
 MOB_HIT_RECT = pg.Rect(0,0,96,96)
-MOB_HITPOINTS = 32
+MOB_HITPOINTS = 3000
+
+SWORD_FUSIONS = ["Bloodthirsty", "Mighty", "Vorpal", "Toxic", "Burning", "Frozen"]
 
 #player settings
 #PLAYER_SPEED = 300
